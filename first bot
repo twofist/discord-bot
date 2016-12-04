@@ -1,0 +1,75 @@
+var Discord = require("discord.js");
+var bot = new Discord.Client();
+
+//give out in console how many channels and server and users
+bot.on("ready", () => {
+    console.log(`Ready to server in ${bot.channels.size} channels on ${bot.guilds.size} servers, for a total of ${bot.users.size} users.`);
+});
+
+//greet new user
+bot.on("guildMemberAdd",(guild, member) => {
+	console.log(`New User "${member.user.username}" has joined "${guild.name}"` );
+	guild.defaultChannel.sendMessage(`"${member.user.username}" has joined this server`);
+});
+
+
+
+//if someone types a message
+bot.on("message", msg => {
+	
+	//set prefix
+	let prefix = "!";
+	
+	//only respond if message starts with !
+	if(!msg.content.startsWith(prefix)) return;
+	
+	//only talk if no other bot talked
+	if(msg.author.bot) return;
+	
+	//respond if the first word is X
+    if (msg.content.startsWith(prefix + "ping")) {
+        msg.channel.sendMessage("pong!");
+    }
+	else if (msg.content.startsWith(prefix + "foo"))
+	{
+		msg.channel.sendMessage("bar!");
+	}
+});
+
+//declare object when someone says x answer y
+var responseObject = {
+  "ayy": "lmao!",
+  "wat": "Say what?",
+  "lol": "roflmaotntpmp",
+  "fuck you": "no you",
+  "xd": "hehe xD",
+  "XD": "hehe xD",
+  "xD": "hehe xD",
+  ":c": "don't be sad i'm here for you!",
+  "i love you": "i love you too!<3",
+  "lenny": "( ͡° ͜ʖ ͡°)",
+  "shrug": "¯\_(ツ)_/¯",
+  "justright": "✋😩👌",
+  "fuck": "(╯°□°）╯︵ ┻━┻",
+  "no fuck": "┬──┬﻿ ノ( ゜-゜ノ)",
+};
+
+//when someone says something from the object reply the y
+bot.on('message', (message) => {
+  if(responseObject[message.content]) {
+    message.channel.sendMessage(responseObject[message.content]);
+  }
+});
+
+
+
+//ready message in console when bot is ready
+bot.on('ready', () => {
+  console.log('I am ready!');
+});
+
+//give out any errors in console
+bot.on('error', e => { console.error(e); });
+
+//how the bot logins
+bot.login("MjU0OTUwMzMyMzE1MDc0NTcz.CyWgkQ.LjOo3NvetRUGDLiRxdC9a_jjhKA");
