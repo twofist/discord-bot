@@ -111,4 +111,4 @@ bot.on('ready', () => {
 bot.on('error', e => { console.error(e); });
 
 //how the bot logins
-bot.login("MjU0OTUwMzMyMzE1MDc0NTcz.CyWgkQ.LjOo3NvetRUGDLiRxdC9a_jjhKA");
+bot.login("xxxyourtokenxxx");
