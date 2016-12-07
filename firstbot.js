@@ -3,21 +3,10 @@ const yt = require('ytdl-core');
 const tokens = require('./tokens.json');
 const bot = new Discord.Client();
 
-
-
-
-//give out in console how many channels and server and users
 bot.on("ready", () => {
-    console.log(`Ready to server in ${bot.channels.size} channels on ${bot.guilds.size} servers, for a total of ${bot.users.size} users.`);
+    console.log(`Ready to serve in ${bot.channels.size} channels on ${bot.guilds.size} servers, for a total of ${bot.users.size} users.`);
 });
 
-//greet new user broken
-bot.on("guildMemberAdd",(guild, member) => {
-	console.log(`New User ${member.user.username} has joined ${guild.name}` );
-	guild.defaultChannel.sendMessage(`${member.user.username} has joined this server`);
-});
-
-//music bot no tutorial
 let queue = {};
 
 const commands = {
@@ -99,39 +88,29 @@ const commands = {
 		msg.channel.sendMessage(tosend.join('\n'));
 	},
 	'reboot': (msg) => {
-		if (msg.author.id == tokens.adminID) process.exit(); //Requires a node module like Forever to work.
+		if (msg.author.id == tokens.adminID) process.exit();
 	}
 };
-//end music bot
 
-//if someone types a message
 bot.on("message", msg => {
-	//set prefix
 	let prefix = "!";
-	//only respond if message starts with !
 	if(!msg.content.startsWith(prefix)) return;
-	//only talk if no other bot talked
 	if(msg.author.bot) return;
-	//respond if the first word is X
     if (msg.content.startsWith(prefix + "ping")) {
         msg.channel.sendMessage("pong!");
     }
 	else if (msg.content.startsWith(prefix + "help"))
 	{
-		msg.channel.sendMessage("type ++help for music bot commands");
+		msg.channel.sendMessage("```type ++help for music bot commands \nrate waifu \nroll d4, roll d8, roll d20```");
 	}
 });
 
-// create an event listener for messages
 bot.on('message', message => {
-  // if the message is "what is my avatar",
   if (message.content.toLowerCase() === 'what is my avatar') {
-    // send the user's avatar URL
     message.reply(message.author.avatarURL);
   }
 });
 
-//declare object when someone says x answer y
 var responseObject = {
   "ayy": "lmao!",
   "wat": "Say what?",
@@ -156,67 +135,144 @@ var responseObject = {
   "calm down": "http://www.relatably.com/m/img/anime-memes/Whoa-dude.-Calm-down.jpg",
   "tfw no friends": "don't worry i am your friend!",
   "you suck": "i give the best succ",
+  "no you": "no you!",
+  "no u": "no you!",
 };
 
-//when someone says something from the object reply the y
 bot.on('message', (message) => {
   if(responseObject[message.content]) {
     message.channel.sendMessage(responseObject[message.content]);
   }
 });
 
-//deletes message
 bot.on('message', message => {
-		if(message.content.toLowerCase().includes("gay") || message.content.toLowerCase().includes("fgt") || message.content.toLowerCase().includes("faggot") || message.content.toLowerCase().includes("fag")){
+		if(message.content.toLowerCase().includes("shit bot") || message.content.toLowerCase().includes("fgt") || message.content.toLowerCase().includes("faggot") || message.content.toLowerCase().includes("fag")){
 			message.delete()
-		.then(msg => console.log(`Deleted message from ${msg.author} ${msg.member.user.username}`));
-		//message.channel.sendMessage("No bad!");
+		.then(msg => console.log(`Deleted message from ${msg.author} ${msg.member.user.username}: ${msg}`));
 		message.reply("no, bad!");
 		}		
 });
 
-
-//ready message in console when bot is ready
-bot.on('ready', () => {
-  console.log('I am ready!');
+bot.on('message', message => {
+		if(message.content.toLowerCase().includes("rate waifu") || message.content.toLowerCase().includes("rate my waifu")){
+			const randomnumber = Math.floor((Math.random() * 10) + 1);
+			if (randomnumber === 1)
+				message.reply("http://0.media.dorkly.cvcdn.com/97/85/d89d8febb4d1b180e3d26cfe3391d7ca.jpg");
+			else if (randomnumber === 2)
+				message.reply("http://data.whicdn.com/images/184771330/large.jpg");
+			else if (randomnumber === 3)
+				message.reply("your waifu is pretty shit 3/10 ");			
+			else if (randomnumber === 4)
+				message.reply("your waifu is okay i guess 4/10");			
+			else if (randomnumber === 5)
+				message.reply("literally most average waifu i've ever seen");			
+			else if (randomnumber === 6)
+				message.reply("okay, your waifu is not bad 6/10");			
+			else if (randomnumber === 7)
+				message.reply("nice waifu 7/10");
+			else if (randomnumber === 8)
+				message.reply("hey, that's a pretty nice waifu you got there");
+			else if (randomnumber === 9)
+				message.reply("best waifu");
+			else if (randomnumber === 10)
+				message.reply("error waifu rating off the scale");
+			else {
+				message.reply("error");
+			}
+		}
 });
 
-//give out any errors in console
+bot.on('message', message => {
+	if (message.content.toLowerCase().includes("roll d20") || message.content.toLowerCase().includes("roll d8") || message.content.toLowerCase().includes("roll d6") || message.content.toLowerCase().includes("roll d4")){
+			if (message.content.toLowerCase().includes("roll d20")){
+				var xrandom = 20;
+			}
+			else if (message.content.toLowerCase().includes("roll d8")){
+				var xrandom = 8;
+			}
+			else if (message.content.toLowerCase().includes("roll d6")){
+				xrandom = 6
+			}
+			else if (message.content.toLowerCase().includes("roll d4")){
+				xrandom = 4
+			}
+			switch (Math.floor((Math.random() * xrandom) + 1)){
+				case 1:
+					message.reply("rip, you rolled a 1");
+					break;
+				case 2:
+					message.reply("you rolled a 2");
+					break;
+				case 3:
+					message.reply("you rolled a 3");
+					break;
+				case 4:
+					message.reply("you rolled a 4");
+					break;
+				case 5:
+					message.reply("you rolled a 5");
+					break;
+				case 6:
+					message.reply("you rolled a 6");
+					break;
+				case 7:
+					message.reply("you rolled a 7");
+					break;
+				case 8:
+					message.reply("you rolled a 8");
+					break;
+				case 9:
+					message.reply("you rolled a 9");
+					break;
+				case 10:
+					message.reply("you rolled a 10");
+					break;
+				case 11:
+					message.reply("you rolled a 11");
+					break;
+				case 12:
+					message.reply("you rolled a 12");
+					break;
+				case 13:
+					message.reply("you rolled a 13");
+					break;
+				case 14:
+					message.reply("you rolled a 14");
+					break;
+				case 15:
+					message.reply("you rolled a 15");
+					break;
+				case 16:
+					message.reply("you rolled a 16");
+					break;
+				case 17:
+					message.reply("you rolled a 17");
+					break;
+				case 18:
+					message.reply("you rolled a 18");
+					break;
+				case 19:
+					message.reply("you rolled a 19");
+					break;
+				case 20:
+					message.reply("woop woop! you rolled a 20");
+					break;
+				default:
+					message.reply("error");
+			}
+	}
+});
+
+bot.on('ready', () => {
+  console.log('I am ready!');
+  bot.user.setGame("twofists slave");
+});
+
 bot.on('error', e => { console.error(e); });
 
-
-
-//no tutorial so
 bot.on('message', msg => {
 	if (!msg.content.startsWith(tokens.prefix)) return;
 	if (commands.hasOwnProperty(msg.content.toLowerCase().slice(tokens.prefix.length).split(' ')[0])) commands[msg.content.toLowerCase().slice(tokens.prefix.length).split(' ')[0]](msg);
 });
 
-//how the bot logins
 bot.login(tokens.d_token);
-
-
-
-
-
-//old/useless code maybe can use later
-
-/*
-bot.on('message', message => {
-  if (message.content.includes('++play')) {
-	  const voiceChannel = message.member.voiceChannel;
-    if (!voiceChannel) {
-      return message.reply(`Please be in a voice channel first!`);
-    }
-    voiceChannel.join()
-      .then(connnection => {
-        let stream = yt("https://www.youtube.com/watch?v=d6T8H85y8NU", {audioonly: true});
-        const dispatcher = connnection.playStream(stream);
-        dispatcher.on('end', () => {
-          voiceChannel.leave();
-        });
-      });
-  }
-});
-*/
-
