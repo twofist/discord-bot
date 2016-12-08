@@ -3,6 +3,7 @@ const yt = require('ytdl-core');
 const tokens = require('./tokens.json');
 const bot = new Discord.Client();
 const colors = require('colors');
+const request = require('request-promise-native');
 
 
 
@@ -108,19 +109,104 @@ bot.on("message", msg => {
 	//only talk if no other bot talked
 	if(msg.author.bot) return;
 	//respond if the first word is X
-    if (msg.content.startsWith(prefix + "ping")) {
+    if (msg.content.toLowerCase().startsWith(prefix + "ping")) {
         msg.channel.sendMessage("pong!")
 		.then((message) => {
 		message.edit(`pong! ${message.createdTimestamp - msg.createdTimestamp}ms`);
 		});
     }
-	else if (msg.content.startsWith(prefix + "help"))
+	else if (msg.content.toLowerCase().startsWith(prefix + "help"))
 	{
-		msg.channel.sendMessage("```type ++help for music bot commands \n!stats \nrate waifu \nroll d4, roll d8, roll d20```");
+		msg.channel.sendMessage("```type ++help for music bot commands \n!stats \nrate waifu \nroll d4, roll d6, roll d8, roll d20 \n!rock, !paper, !scissor \n!anime nsfw, !furry nsfw \n!shoot @username \n!botinvite```");
 	}
-	else if (msg.content.startsWith(prefix + "stats"))
+	else if (msg.content.toLowerCase().startsWith(prefix + "stats"))
 	{
 		msg.channel.sendMessage(`Memory Usage: ${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)} MB \nUsers: ${bot.users.size} \nServers: ${bot.guilds.size} \nChannels: ${bot.channels.size} \nDiscord.js: v${Discord.version}`);
+	}
+	else if (msg.content.toLowerCase().startsWith(prefix + "furry nsfw"))
+	{
+		msg.reply('https://e621.net/post/random');
+	}
+	else if (msg.content.toLowerCase().startsWith(prefix + "anime nsfw") || msg.content.toLowerCase().startsWith(prefix + "hentai"))
+	{
+		msg.reply('http://gelbooru.com/index.php?page=post&s=random');
+	}
+	else if (msg.content.toLowerCase().startsWith(prefix + "rock"))
+	{
+		switch (Math.floor((Math.random() * 3) + 1)){
+		case 1: msg.reply("scissor! ahw i lose :c");
+		break;
+		case 2: msg.reply("rock! draw! o:");
+		break;
+		case 3: msg.reply("paper! woop woop i win!");
+		break;
+		default: msg.reply("error!");
+		}
+	}
+	else if (msg.content.toLowerCase().startsWith(prefix + "paper"))
+	{
+		switch (Math.floor((Math.random() * 3) + 1)){			
+		case 1: msg.reply("scissor! woop woop i win!");
+		break;
+		case 2: msg.reply("rock! ahw i lose :c");
+		break;
+		case 3: msg.reply("paper! draw! o:");
+		break;
+		default: msg.reply("error!");
+		}
+	}
+	else if (msg.content.toLowerCase().startsWith(prefix + "scissor"))
+	{
+		switch (Math.floor((Math.random() * 3) + 1)){
+		case 1: msg.reply("scissor! draw! o:");
+		break;
+		case 2: msg.reply("rock! woop woop i win!");
+		break;
+		case 3: msg.reply("paper! ahw i lose :c");
+		break;
+		default: msg.reply("error!");
+		}
+	}
+	else if (msg.content.toLowerCase().startsWith(prefix + "shoot"))
+	{
+		if(msg.mentions.users.size === 0){
+			switch (Math.floor((Math.random() * 6) + 1)){
+				case 1: msg.reply(`you shot yourself!`);
+				break;
+				case 2: msg.reply(`you attempt to shoot yourself, and wow lucky! you live!`);
+				break;
+				case 3: msg.reply(`you tried to shoot yourself but you missed and shot your friend`);
+				break;
+				case 4: msg.reply(`you shot yourself but managed to live through you'll forever have a scar`);
+				break;
+				case 5: msg.reply(`woop woop! as you try to shoot yourself the police storms in and shoots you because you're black`);
+				break;
+				case 6: msg.reply(`you shot yourself, you ded boi`);
+				break;
+				default: msg.reply("error");
+			}
+		}
+		else if (msg.mentions.users.first()){
+			switch (Math.floor((Math.random() * 6) + 1)){
+				case 1: msg.reply(`shoots ${msg.mentions.users.first()} oh great, ${msg.author} managed to shoot himself`);
+				break;
+				case 2: msg.reply(`shoots ${msg.mentions.users.first()} and misses completely!`);
+				break;
+				case 3: msg.reply(`shoots ${msg.mentions.users.first()} you ded boi`);
+				break;
+				case 4: msg.reply(`shoots ${msg.mentions.users.first()} and misses by a mile!`);
+				break;
+				case 5: msg.reply(`attempts to shoot ${msg.mentions.users.first()} but ${msg.author} is out of bullets`);
+				break;
+				case 6: msg.reply(`shoots ${msg.mentions.users.first()} headshot!`);
+				break;
+				default: msg.reply("error");
+			}
+		}
+	}
+	else if (msg.content.toLowerCase().startsWith(prefix + "botinvite"))
+	{
+		msg.reply("https://discordapp.com/oauth2/authorize?client_id=255377859042869248&scope=bot");
 	}
 });
 
@@ -185,7 +271,7 @@ bot.on('message', message => {
 
 //rate waifu and reply
 bot.on('message', message => {
-		if(message.content.toLowerCase().includes("rate waifu") || message.content.toLowerCase().includes("rate my waifu")){
+		if(message.content.toLowerCase() === ("rate waifu") || message.content.toLowerCase() === ("rate my waifu")){
 			const randomnumber = Math.floor((Math.random() * 10) + 1);
 			if (randomnumber === 1)
 				message.reply("http://0.media.dorkly.cvcdn.com/97/85/d89d8febb4d1b180e3d26cfe3391d7ca.jpg");
@@ -215,17 +301,17 @@ bot.on('message', message => {
 
 //check wich dice then roll specific dice and reply with the outcome
 bot.on('message', message => {
-	if (message.content.toLowerCase().includes("roll d20") || message.content.toLowerCase().includes("roll d8") || message.content.toLowerCase().includes("roll d6") || message.content.toLowerCase().includes("roll d4")){
-			if (message.content.toLowerCase().includes("roll d20")){
+	if (message.content.toLowerCase() === ("roll d20") || message.content.toLowerCase() === ("roll d8") || message.content.toLowerCase() === ("roll d6") || message.content.toLowerCase() === ("roll d4")){
+			if (message.content.toLowerCase() === ("roll d20")){
 				var xrandom = 20;
 			}
-			else if (message.content.toLowerCase().includes("roll d8")){
+			else if (message.content.toLowerCase() === ("roll d8")){
 				var xrandom = 8;
 			}
-			else if (message.content.toLowerCase().includes("roll d6")){
+			else if (message.content.toLowerCase() === ("roll d6")){
 				xrandom = 6
 			}
-			else if (message.content.toLowerCase().includes("roll d4")){
+			else if (message.content.toLowerCase() === ("roll d4")){
 				xrandom = 4
 			}
 			switch (Math.floor((Math.random() * xrandom) + 1)){
