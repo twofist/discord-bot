@@ -2,11 +2,17 @@ const Discord = require("discord.js");
 const yt = require('ytdl-core');
 const tokens = require('./tokens.json');
 const bot = new Discord.Client();
+const colors = require('colors');
 
+
+
+
+//give out in console how many channels and server and users
 bot.on("ready", () => {
-    console.log(`Ready to serve in ${bot.channels.size} channels on ${bot.guilds.size} servers, for a total of ${bot.users.size} users.`);
+    console.log(`Ready to serve in ${bot.channels.size} channels on ${bot.guilds.size} servers, for a total of ${bot.users.size} users.`.yellow);
 });
 
+//music bot no tutorial
 let queue = {};
 
 const commands = {
@@ -88,29 +94,44 @@ const commands = {
 		msg.channel.sendMessage(tosend.join('\n'));
 	},
 	'reboot': (msg) => {
-		if (msg.author.id == tokens.adminID) process.exit();
+		if (msg.author.id == tokens.adminID) process.exit(); //Requires a node module like Forever to work.
 	}
 };
+//end music bot
 
+//if someone types a message
 bot.on("message", msg => {
+	//set prefix
 	let prefix = "!";
+	//only respond if message starts with !
 	if(!msg.content.startsWith(prefix)) return;
+	//only talk if no other bot talked
 	if(msg.author.bot) return;
+	//respond if the first word is X
     if (msg.content.startsWith(prefix + "ping")) {
-        msg.channel.sendMessage("pong!");
+        msg.channel.sendMessage("pong!")
+		.then((message) => {
+		message.edit(`pong! ${message.createdTimestamp - msg.createdTimestamp}ms`);
+		});
     }
 	else if (msg.content.startsWith(prefix + "help"))
 	{
-		msg.channel.sendMessage("```type ++help for music bot commands \nrate waifu \nroll d4, roll d8, roll d20```");
+		msg.channel.sendMessage("```type ++help for music bot commands \n!stats \nrate waifu \nroll d4, roll d8, roll d20```");
+	}
+	else if (msg.content.startsWith(prefix + "stats"))
+	{
+		msg.channel.sendMessage(`Memory Usage: ${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)} MB \nUsers: ${bot.users.size} \nServers: ${bot.guilds.size} \nChannels: ${bot.channels.size} \nDiscord.js: v${Discord.version}`);
 	}
 });
 
+//when someone says what is my avatar reply with link to avatar
 bot.on('message', message => {
   if (message.content.toLowerCase() === 'what is my avatar') {
     message.reply(message.author.avatarURL);
   }
 });
 
+//declare object when someone says x answer y
 var responseObject = {
   "ayy": "lmao!",
   "wat": "Say what?",
@@ -139,20 +160,30 @@ var responseObject = {
   "no u": "no you!",
 };
 
+//when someone says something from the object reply the y
 bot.on('message', (message) => {
   if(responseObject[message.content]) {
     message.channel.sendMessage(responseObject[message.content]);
   }
 });
 
+//if the bot receives a message in DM log it
+bot.on("message", message => {
+	if (message.channel.type === "dm"){
+		console.log(`DM from ${message.author} ${message.author.username}: ${message}`.green);
+	}
+});
+
+//deletes message if someone says a blacklisted word
 bot.on('message', message => {
 		if(message.content.toLowerCase().includes("shit bot") || message.content.toLowerCase().includes("fgt") || message.content.toLowerCase().includes("faggot") || message.content.toLowerCase().includes("fag")){
 			message.delete()
-		.then(msg => console.log(`Deleted message from ${msg.author} ${msg.member.user.username}: ${msg}`));
+		.then(msg => console.log(`Deleted message from ${msg.author} ${msg.member.user.username}: ${msg}`.red));
 		message.reply("no, bad!");
 		}		
 });
 
+//rate waifu and reply
 bot.on('message', message => {
 		if(message.content.toLowerCase().includes("rate waifu") || message.content.toLowerCase().includes("rate my waifu")){
 			const randomnumber = Math.floor((Math.random() * 10) + 1);
@@ -182,6 +213,7 @@ bot.on('message', message => {
 		}
 });
 
+//check wich dice then roll specific dice and reply with the outcome
 bot.on('message', message => {
 	if (message.content.toLowerCase().includes("roll d20") || message.content.toLowerCase().includes("roll d8") || message.content.toLowerCase().includes("roll d6") || message.content.toLowerCase().includes("roll d4")){
 			if (message.content.toLowerCase().includes("roll d20")){
@@ -262,17 +294,21 @@ bot.on('message', message => {
 			}
 	}
 });
-
+	
+//ready message in console when bot is ready
 bot.on('ready', () => {
-  console.log('I am ready!');
+  console.log('I am ready!'.yellow);
   bot.user.setGame("twofists slave");
 });
 
+//give out any errors in console
 bot.on('error', e => { console.error(e); });
 
+//no tutorial, belongs to music section
 bot.on('message', msg => {
 	if (!msg.content.startsWith(tokens.prefix)) return;
 	if (commands.hasOwnProperty(msg.content.toLowerCase().slice(tokens.prefix.length).split(' ')[0])) commands[msg.content.toLowerCase().slice(tokens.prefix.length).split(' ')[0]](msg);
 });
 
+//how the bot logs in
 bot.login(tokens.d_token);
