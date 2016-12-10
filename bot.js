@@ -4,16 +4,12 @@ const tokens = require('./tokens.json');
 const bot = new Discord.Client();
 const colors = require('colors');
 const request = require('request-promise-native');
+var fs = require('fs');
 
-
-
-
-//give out in console how many channels and server and users
 bot.on("ready", () => {
     console.log(`Ready to serve in ${bot.channels.size} channels on ${bot.guilds.size} servers, for a total of ${bot.users.size} users.`.yellow);
 });
 
-//music bot no tutorial
 let queue = {};
 
 const commands = {
@@ -95,20 +91,14 @@ const commands = {
 		msg.channel.sendMessage(tosend.join('\n'));
 	},
 	'reboot': (msg) => {
-		if (msg.author.id == tokens.adminID) process.exit(); //Requires a node module like Forever to work.
+		if (msg.author.id == tokens.adminID) process.exit();
 	}
 };
-//end music bot
 
-//if someone types a message
 bot.on("message", msg => {
-	//set prefix
 	let prefix = "!";
-	//only respond if message starts with !
 	if(!msg.content.startsWith(prefix)) return;
-	//only talk if no other bot talked
 	if(msg.author.bot) return;
-	//respond if the first word is X
     if (msg.content.toLowerCase().startsWith(prefix + "ping")) {
         msg.channel.sendMessage("pong!")
 		.then((message) => {
@@ -117,7 +107,7 @@ bot.on("message", msg => {
     }
 	else if (msg.content.toLowerCase().startsWith(prefix + "help"))
 	{
-		msg.channel.sendMessage("```type ++help for music bot commands \n!stats \nrate waifu \nroll d4, roll d6, roll d8, roll d20 \n!rock, !paper, !scissor \n!anime nsfw, !furry nsfw \n!shoot @username \n!botinvite```");
+		msg.channel.sendMessage("```type ++help for music bot commands \n!stats \nrate waifu \nroll d4, roll d6, roll d8, roll d20 \n!rock, !paper, !scissor \n!anime nsfw, !furry nsfw \n!shoot @username \n!myavatar \n!avatar @username \n!ping \n!dm @username message \n!secretdm @username message (bot needs to be able to delete a message for this) \n!botinvite```");
 	}
 	else if (msg.content.toLowerCase().startsWith(prefix + "stats"))
 	{
@@ -145,7 +135,7 @@ bot.on("message", msg => {
 	}
 	else if (msg.content.toLowerCase().startsWith(prefix + "paper"))
 	{
-		switch (Math.floor((Math.random() * 3) + 1)){			
+		switch (Math.floor((Math.random() * 3) + 1)){
 		case 1: msg.reply("scissor! woop woop i win!");
 		break;
 		case 2: msg.reply("rock! ahw i lose :c");
@@ -208,21 +198,57 @@ bot.on("message", msg => {
 	{
 		msg.reply("https://discordapp.com/oauth2/authorize?client_id=255377859042869248&scope=bot");
 	}
+	else if (msg.content.toLowerCase().startsWith(prefix + "myavatar"))
+	{
+		msg.reply(msg.author.avatarURL);
+	}
+	else if (msg.content.toLowerCase().startsWith(prefix + "avatar"))
+	{
+		if(msg.mentions.users.size === 0){
+			msg.reply(msg.author.avatarURL);
+		}
+		else if (msg.mentions.users.first()){
+			msg.reply(msg.mentions.users.first().avatarURL);
+		}
+	}
+	else if (msg.content.toLowerCase().startsWith(prefix + "dm")){
+        if (msg.mentions.users.size === 0){
+			msg.reply("please choose a user to dm");
+		}
+		else if (msg.content.toLowerCase().startsWith(prefix + "dm") && msg.mentions.users.first()){
+			msg.reply("dming user!");
+			msg.mentions.users.first().sendMessage(`from ${msg.author.username}: ${msg.content.split(" ").slice(2).join(" ")}`);
+		}
+    }
+	else if (msg.content.toLowerCase().startsWith(prefix + "secretdm")){
+        if (msg.mentions.users.size === 0){
+			msg.channel.sendMessage("please choose a user to dm");
+		}
+		else if (msg.content.toLowerCase().startsWith(prefix + "secretdm") && msg.mentions.users.first()){
+			if (msg.mentions.users.first().id === tokens.adminID){
+			msg.delete()
+			msg.mentions.users.first().sendMessage(`from ${msg.author.username}: ${msg.content.split(" ").slice(2).join(" ")}`);
+			msg.channel.sendMessage("done!")
+			.then((message) => {
+			message.delete(3000);
+			});
+			}
+			else {
+			msg.delete()
+			msg.mentions.users.first().sendMessage(`from anon: ${msg.content.split(" ").slice(2).join(" ")}`);
+			msg.channel.sendMessage("done!")
+			.then((message) => {
+			message.delete(3000);
+			});
+			}
+		}
+    }
 });
 
-//when someone says what is my avatar reply with link to avatar
-bot.on('message', message => {
-  if (message.content.toLowerCase() === 'what is my avatar') {
-    message.reply(message.author.avatarURL);
-  }
-});
-
-//declare object when someone says x answer y
 var responseObject = {
   "ayy": "lmao!",
-  "wat": "Say what?",
   "lol": "roflmaotntpmp",
-  "fuck you": "no you",
+  "fuck you": "no you!",
   "xd": "hehe xD",
   "XD": "hehe xD",
   "xD": "hehe xD",
@@ -246,30 +272,34 @@ var responseObject = {
   "no u": "no you!",
 };
 
-//when someone says something from the object reply the y
 bot.on('message', (message) => {
   if(responseObject[message.content]) {
     message.channel.sendMessage(responseObject[message.content]);
   }
 });
 
-//if the bot receives a message in DM log it
 bot.on("message", message => {
 	if (message.channel.type === "dm"){
-		console.log(`DM from ${message.author} ${message.author.username}: ${message}`.green);
+		console.log(`DM from ${message.author.username}: ${message}`.green);
+		fs.appendFile('E:/!a javascript/dmlogs.txt', `DM from ${message.author.username}: ${message} \r\n`, (err) => {
+		if (err) throw err;
+			console.log('written to file');
+		});
 	}
 });
 
-//deletes message if someone says a blacklisted word
 bot.on('message', message => {
 		if(message.content.toLowerCase().includes("shit bot") || message.content.toLowerCase().includes("fgt") || message.content.toLowerCase().includes("faggot") || message.content.toLowerCase().includes("fag")){
 			message.delete()
 		.then(msg => console.log(`Deleted message from ${msg.author} ${msg.member.user.username}: ${msg}`.red));
 		message.reply("no, bad!");
-		}		
+		fs.appendFile('E:/!a javascript/deletelogs.txt', `Deleted message from ${msg.author} ${msg.member.user.username}: ${msg} \r\n`, (err) => {
+		if (err) throw err;
+			console.log('written to file');
+		});
+		}
 });
 
-//rate waifu and reply
 bot.on('message', message => {
 		if(message.content.toLowerCase() === ("rate waifu") || message.content.toLowerCase() === ("rate my waifu")){
 			const randomnumber = Math.floor((Math.random() * 10) + 1);
@@ -278,13 +308,13 @@ bot.on('message', message => {
 			else if (randomnumber === 2)
 				message.reply("http://data.whicdn.com/images/184771330/large.jpg");
 			else if (randomnumber === 3)
-				message.reply("your waifu is pretty shit 3/10 ");			
+				message.reply("your waifu is pretty shit 3/10 ");
 			else if (randomnumber === 4)
-				message.reply("your waifu is okay i guess 4/10");			
+				message.reply("your waifu is okay i guess 4/10");
 			else if (randomnumber === 5)
-				message.reply("literally most average waifu i've ever seen");			
+				message.reply("literally most average waifu i've ever seen");
 			else if (randomnumber === 6)
-				message.reply("okay, your waifu is not bad 6/10");			
+				message.reply("okay, your waifu is not bad 6/10");
 			else if (randomnumber === 7)
 				message.reply("nice waifu 7/10");
 			else if (randomnumber === 8)
@@ -299,7 +329,6 @@ bot.on('message', message => {
 		}
 });
 
-//check wich dice then roll specific dice and reply with the outcome
 bot.on('message', message => {
 	if (message.content.toLowerCase() === ("roll d20") || message.content.toLowerCase() === ("roll d8") || message.content.toLowerCase() === ("roll d6") || message.content.toLowerCase() === ("roll d4")){
 			if (message.content.toLowerCase() === ("roll d20")){
@@ -380,21 +409,17 @@ bot.on('message', message => {
 			}
 	}
 });
-	
-//ready message in console when bot is ready
+
 bot.on('ready', () => {
   console.log('I am ready!'.yellow);
   bot.user.setGame("twofists slave");
 });
 
-//give out any errors in console
 bot.on('error', e => { console.error(e); });
 
-//no tutorial, belongs to music section
 bot.on('message', msg => {
 	if (!msg.content.startsWith(tokens.prefix)) return;
 	if (commands.hasOwnProperty(msg.content.toLowerCase().slice(tokens.prefix.length).split(' ')[0])) commands[msg.content.toLowerCase().slice(tokens.prefix.length).split(' ')[0]](msg);
 });
 
-//how the bot logs in
 bot.login(tokens.d_token);
