@@ -4,7 +4,7 @@ const tokens = require('./tokens.json');
 const bot = new Discord.Client();
 const colors = require('colors');
 const request = require('request-promise-native');
-var fs = require('fs');
+const fs = require('fs');
 
 
 bot.on("ready", () => {
