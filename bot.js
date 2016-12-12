@@ -156,13 +156,13 @@ bot.on("message", msg => {
 		switch (Math.floor((Math.random() * 3) + 1))
 		{
 			case 1: 
-				msg.reply("scissor! woop woop i win!");
+				msg.reply("scissor! ahw i lose :c");
 				break;
 			case 2: 
-				msg.reply("rock! ahw i lose :c");
+				msg.reply("rock! draw! o:");
 				break;
 			case 3: 
-				msg.reply("paper! draw! o:");
+				msg.reply("paper! woop woop i win!");
 				break;
 			default: 
 				msg.reply("error!");
