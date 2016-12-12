@@ -3,8 +3,7 @@ const yt = require('ytdl-core');
 const tokens = require('./tokens.json');
 const bot = new Discord.Client();
 const colors = require('colors');
-const request = require('request-promise-native');
-var fs = require('fs');
+const fs = require('fs');
 
 
 bot.on("ready", () => {
@@ -16,7 +15,9 @@ let queue = {};
 const commands = {
 	'play': (msg) => {
 		if (queue[msg.guild.id] === undefined) return msg.channel.sendMessage(`Add some songs to the queue first with ${tokens.prefix}add`);
-		if (!msg.guild.voiceConnection) return commands.join(msg).then(() => commands.play(msg));
+		if (!msg.guild.voiceConnection) return commands.join(msg)
+			.then(() => commands.play(msg))
+		const something = msg.member.voiceChannel; //ty felix
 		if (queue[msg.guild.id].playing) return msg.channel.sendMessage('Already Playing');
 		let dispatcher;
 		queue[msg.guild.id].playing = true;
@@ -24,9 +25,10 @@ const commands = {
 		console.log(queue);
 		(function play(song) {
 			console.log(song);
-			if (song === undefined) return msg.channel.sendMessage('Queue is empty').then(() => {
+			if (song === undefined) return msg.channel.sendMessage('Queue is empty')
+				.then(() => {
 				queue[msg.guild.id].playing = false;
-				msg.member.voiceChannel.leave(); //if user that initiated the bot isn't in the voicechannel when song ends then it can't find the voicechannel
+				something.leave();
 			});
 			msg.channel.sendMessage(`Playing: **${song.title}** as requested by: **${song.requester}**`);
 			dispatcher = msg.guild.voiceConnection.playStream(yt(song.url, { audioonly: true }), { passes : tokens.passes });
@@ -34,15 +36,18 @@ const commands = {
 			collector.on('message', m => {
 				if (m.content.startsWith(tokens.prefix + 'pause')) 
 				{
-					msg.channel.sendMessage('paused').then(() => {dispatcher.pause();});
+					msg.channel.sendMessage('paused')
+					.then(() => {dispatcher.pause();});
 				} 
 				else if (m.content.startsWith(tokens.prefix + 'resume'))
 				{
-					msg.channel.sendMessage('resumed').then(() => {dispatcher.resume();});
+					msg.channel.sendMessage('resumed')
+					.then(() => {dispatcher.resume();});
 				} 
 				else if (m.content.startsWith(tokens.prefix + 'skip'))
 				{
-					msg.channel.sendMessage('skipped').then(() => {dispatcher.end();});
+					msg.channel.sendMessage('skipped')
+					.then(() => {dispatcher.end();});
 				} 
 				else if (m.content.startsWith('volume+'))
 				{
@@ -67,7 +72,8 @@ const commands = {
 				play(queue[msg.guild.id].songs[0]);
 			});
 			dispatcher.on('error', (err) => {
-				return msg.channel.sendMessage('error: ' + err).then(() => {
+				return msg.channel.sendMessage('error: ' + err)
+				.then(() => {
 					collector.stop();
 					queue[msg.guild.id].songs.shift();
 					play(queue[msg.guild.id].songs[0]);
@@ -79,7 +85,8 @@ const commands = {
 		return new Promise((resolve, reject) => {
 			const voiceChannel = msg.member.voiceChannel;
 			if (!voiceChannel || voiceChannel.type !== 'voice') return msg.reply('I couldn\'t connect to your voice channel...');
-			voiceChannel.join().then(connection => resolve(connection)).catch(err => reject(err));
+			voiceChannel.join()
+			.then(connection => resolve(connection)).catch(err => reject(err));
 		});
 	},
 	'add': (msg) => {
@@ -99,7 +106,20 @@ const commands = {
 		msg.channel.sendMessage(`__**${msg.guild.name}'s Music Queue:**__ Currently **${tosend.length}** songs queued ${(tosend.length > 15 ? '*[Only next 15 shown]*' : '')}\n\`\`\`${tosend.slice(0,15).join('\n')}\`\`\``);
 	},
 	'help': (msg) => {
-		let tosend = ['```xl', tokens.prefix + 'join : "Join Voice channel of msg sender"',	tokens.prefix + 'add : "Add a valid youtube link to the queue"', tokens.prefix + 'queue : "Shows the current queue, up to 15 songs shown."', tokens.prefix + 'play : "Play the music queue if already joined to a voice channel"', '', 'the following commands only function while the play command is running:'.toUpperCase(), tokens.prefix + 'pause : "pauses the music"',	tokens.prefix + 'resume : "resumes the music"', tokens.prefix + 'skip : "skips the playing song"', tokens.prefix + 'time : "Shows the playtime of the song."',	'volume+(+++) : "increases volume by 2%/+"',	'volume-(---) : "decreases volume by 2%/-"',	'```'];
+		let tosend = ['```xl',
+		tokens.prefix + 'join : "Join Voice channel of msg sender"',
+		tokens.prefix + 'add : "Add a valid youtube link to the queue"',
+		tokens.prefix + 'queue : "Shows the current queue, up to 15 songs shown."',
+		tokens.prefix + 'play : "Play the music queue if already joined to a voice channel"',
+		'',
+		'the following commands only function while the play command is running:'.toUpperCase(),
+		tokens.prefix + 'pause : "pauses the music"',
+		tokens.prefix + 'resume : "resumes the music"',
+		tokens.prefix + 'skip : "skips the playing song"',
+		tokens.prefix + 'time : "Shows the playtime of the song."',
+		'volume+(+++) : "increases volume by 2%/+"',
+		'volume-(---) : "decreases volume by 2%/-"',
+		'```'];
 		msg.channel.sendMessage(tosend.join('\n'));
 	},
 	'reboot': (msg) => {
@@ -124,34 +144,24 @@ bot.on("message", msg => {
 	}
 	else if (msg.content.toLowerCase().startsWith(prefix + "stats"))
 	{
-		msg.channel.sendMessage(`Memory Usage: ${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)} MB \nUsers: ${bot.users.size} \nServers: ${bot.guilds.size} \nChannels: ${bot.channels.size} \nDiscord.js: v${Discord.version}`);
+		msg.channel.sendMessage(`
+		Memory Usage: ${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)} MB 
+		\nUsers: ${bot.users.size} 
+		\nServers: ${bot.guilds.size} 
+		\nChannels: ${bot.channels.size} 
+		\nDiscord.js: v${Discord.version}
+		`);
 	}
 	else if (msg.content.toLowerCase().startsWith(prefix + "furry nsfw"))
 	{
 		msg.reply('https://e621.net/post/random');
 	}
-	else if (msg.content.toLowerCase().startsWith(prefix + "anime nsfw") || msg.content.toLowerCase().startsWith(prefix + "hentai"))
+	else if (msg.content.toLowerCase().startsWith(prefix + "anime nsfw") || 
+	msg.content.toLowerCase().startsWith(prefix + "hentai"))
 	{
 		msg.reply('http://gelbooru.com/index.php?page=post&s=random');
 	}
 	else if (msg.content.toLowerCase().startsWith(prefix + "rock"))
-	{
-		switch (Math.floor((Math.random() * 3) + 1))
-		{
-		case 1: 
-			msg.reply("scissor! ahw i lose :c");
-			break;
-		case 2: 
-			msg.reply("rock! draw! o:");
-			break;
-		case 3: 
-			msg.reply("paper! woop woop i win!");
-			break;
-		default: 
-			msg.reply("error!");
-		}
-	}
-	else if (msg.content.toLowerCase().startsWith(prefix + "paper"))
 	{
 		switch (Math.floor((Math.random() * 3) + 1))
 		{
@@ -163,6 +173,23 @@ bot.on("message", msg => {
 				break;
 			case 3: 
 				msg.reply("paper! woop woop i win!");
+				break;
+			default: 
+				msg.reply("error!");
+		}
+	}
+	else if (msg.content.toLowerCase().startsWith(prefix + "paper"))
+	{
+		switch (Math.floor((Math.random() * 3) + 1))
+		{
+			case 1: 
+				msg.reply("scissor! woop woop i win!");
+				break;
+			case 2: 
+				msg.reply("rock! ahw i lose :c");
+				break;
+			case 3: 
+				msg.reply("paper! draw! o:");
 				break;
 			default: 
 				msg.reply("error!");
@@ -265,7 +292,8 @@ bot.on("message", msg => {
 		{
 			msg.reply("please choose a user to dm");
 		}
-		else if (msg.content.toLowerCase().startsWith(prefix + "dm") && msg.mentions.users.first())
+		else if (msg.content.toLowerCase().startsWith(prefix + "dm") && 
+		msg.mentions.users.first())
 		{
 			msg.reply("dming user!");
 			msg.mentions.users.first().sendMessage(`from ${msg.author.username}: ${msg.content.split(" ").slice(2).join(" ")}`);
@@ -277,7 +305,8 @@ bot.on("message", msg => {
 		{
 			msg.channel.sendMessage("please choose a user to dm");
 		}
-		else if (msg.content.toLowerCase().startsWith(prefix + "secretdm") && msg.mentions.users.first())
+		else if (msg.content.toLowerCase().startsWith(prefix + "secretdm") && 
+		msg.mentions.users.first())
 		{
 			if (msg.mentions.users.first().id === tokens.adminID)
 			{
@@ -349,7 +378,10 @@ bot.on("message", msg => {
 });
 
 bot.on('message', msg => {
-	if(msg.content.toLowerCase().includes("shit bot") || msg.content.toLowerCase().includes("fgt") || msg.content.toLowerCase().includes("faggot") || msg.content.toLowerCase().includes("fag"))
+	if(msg.content.toLowerCase().includes("shit bot") || 
+	msg.content.toLowerCase().includes("fgt") || 
+	msg.content.toLowerCase().includes("faggot") || 
+	msg.content.toLowerCase().includes("fag"))
 	{
 		msg.delete()
 		.then(msg => console.log(`Deleted msg from ${msg.author} ${msg.member.user.username}: ${msg}`.red));
@@ -362,7 +394,8 @@ bot.on('message', msg => {
 });
 
 bot.on('message', msg => {
-	if(msg.content.toLowerCase() === ("rate waifu") || msg.content.toLowerCase() === ("rate my waifu"))
+	if(msg.content.toLowerCase() === ("rate waifu") || 
+	msg.content.toLowerCase() === ("rate my waifu"))
 	{
 		const randomnumber = Math.floor((Math.random() * 10) + 1);
 		if (randomnumber === 1)
@@ -393,19 +426,23 @@ bot.on('message', msg => {
 });
 
 bot.on('message', msg => {
-	if (msg.content.toLowerCase() === ("roll d20") || msg.content.toLowerCase() === ("roll d10") || msg.content.toLowerCase() === ("roll d8") || msg.content.toLowerCase() === ("roll d6") || msg.content.toLowerCase() === ("roll d4"))
+	if (msg.content.toLowerCase() === ("roll d20") || 
+	msg.content.toLowerCase() === ("roll d10") || 
+	msg.content.toLowerCase() === ("roll d8") || 
+	msg.content.toLowerCase() === ("roll d6") || 
+	msg.content.toLowerCase() === ("roll d4"))
 	{
 		if (msg.content.toLowerCase() === ("roll d20"))
 		{
-			var xrandom = 20;
+			xrandom = 20;
 		}
 		else if (msg.content.toLowerCase() === ("roll d10"))
 		{
-			var xrandom = 10;
+			xrandom = 10;
 		}
 		else if (msg.content.toLowerCase() === ("roll d8"))
 		{
-			var xrandom = 8;
+			xrandom = 8;
 		}
 		else if (msg.content.toLowerCase() === ("roll d6"))
 		{
