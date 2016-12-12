@@ -140,7 +140,21 @@ bot.on("message", msg => {
     }
 	else if (msg.content.toLowerCase().startsWith(prefix + "help"))
 	{
-		msg.channel.sendMessage("```type ++help for music bot commands \n!stats \nrate waifu \nroll d4, roll d6, roll d8, roll d10, roll d20 \n!rock, !paper, !scissor \n!anime nsfw, !furry nsfw \n!shoot @username \n!myavatar \n!avatar @username \n!ping \n!dm @username msg \n!secretdm @username msg (bot needs to be able to delete a msg for this) \n!botinvite```");
+		msg.channel.sendMessage("```" +
+		"type ++help for music bot commands"+
+		"\n!stats"+
+		"\nrate waifu"+
+		"\nroll d4, roll d6, roll d8, roll d10, roll d20"+
+		"\n!rock, !paper, !scissor"+
+		"\n!anime nsfw, !furry nsfw"+
+		"\n!shoot @username"+
+		"\n!myavatar"+
+		"\n!avatar @username"+
+		"\n!ping"+
+		"\n!dm @username msg"+
+		"\n!secretdm @username msg (bot needs to be able to delete a msg for this)"+
+		"\n!botinvite (gives you a link to invite the bot to your own server)"+
+		"```");
 	}
 	else if (msg.content.toLowerCase().startsWith(prefix + "stats"))
 	{
