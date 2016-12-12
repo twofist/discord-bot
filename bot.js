@@ -32,21 +32,32 @@ const commands = {
 			dispatcher = msg.guild.voiceConnection.playStream(yt(song.url, { audioonly: true }), { passes : tokens.passes });
 			let collector = msg.channel.createCollector(m => m);
 			collector.on('message', m => {
-				if (m.content.startsWith(tokens.prefix + 'pause')) {
+				if (m.content.startsWith(tokens.prefix + 'pause')) 
+				{
 					msg.channel.sendMessage('paused').then(() => {dispatcher.pause();});
-				} else if (m.content.startsWith(tokens.prefix + 'resume')){
+				} 
+				else if (m.content.startsWith(tokens.prefix + 'resume'))
+				{
 					msg.channel.sendMessage('resumed').then(() => {dispatcher.resume();});
-				} else if (m.content.startsWith(tokens.prefix + 'skip')){
+				} 
+				else if (m.content.startsWith(tokens.prefix + 'skip'))
+				{
 					msg.channel.sendMessage('skipped').then(() => {dispatcher.end();});
-				} else if (m.content.startsWith('volume+')){
+				} 
+				else if (m.content.startsWith('volume+'))
+				{
 					if (Math.round(dispatcher.volume*50) >= 100) return msg.channel.sendMessage(`Volume: ${Math.round(dispatcher.volume*50)}%`);
 					dispatcher.setVolume(Math.min((dispatcher.volume*50 + (2*(m.content.split('+').length-1)))/50,2));
 					msg.channel.sendMessage(`Volume: ${Math.round(dispatcher.volume*50)}%`);
-				} else if (m.content.startsWith('volume-')){
+				} 
+				else if (m.content.startsWith('volume-'))
+				{
 					if (Math.round(dispatcher.volume*50) <= 0) return msg.channel.sendMessage(`Volume: ${Math.round(dispatcher.volume*50)}%`);
 					dispatcher.setVolume(Math.max((dispatcher.volume*50 - (2*(m.content.split('-').length-1)))/50,0));
 					msg.channel.sendMessage(`Volume: ${Math.round(dispatcher.volume*50)}%`);
-				} else if (m.content.startsWith(tokens.prefix + 'time')){
+				} 
+				else if (m.content.startsWith(tokens.prefix + 'time'))
+				{
 					msg.channel.sendMessage(`time: ${Math.floor(dispatcher.time / 60000)}:${Math.floor((dispatcher.time % 60000)/1000) <10 ? '0'+Math.floor((dispatcher.time % 60000)/1000) : Math.floor((dispatcher.time % 60000)/1000)}`);
 				}
 			});
@@ -96,17 +107,12 @@ const commands = {
 	}
 };
 
-
-
 bot.on("message", msg => {
-
 	let prefix = "!";
-
 	if(!msg.content.startsWith(prefix)) return;
-
 	if(msg.author.bot) return;
-
-    if (msg.content.toLowerCase().startsWith(prefix + "ping")) {
+    if (msg.content.toLowerCase().startsWith(prefix + "ping")) 
+	{
         msg.channel.sendMessage("pong!")
 		.then((message) => {
 		message.edit(`pong! ${message.createdTimestamp - msg.createdTimestamp}ms`);
@@ -130,74 +136,107 @@ bot.on("message", msg => {
 	}
 	else if (msg.content.toLowerCase().startsWith(prefix + "rock"))
 	{
-		switch (Math.floor((Math.random() * 3) + 1)){
-		case 1: msg.reply("scissor! ahw i lose :c");
-		break;
-		case 2: msg.reply("rock! draw! o:");
-		break;
-		case 3: msg.reply("paper! woop woop i win!");
-		break;
-		default: msg.reply("error!");
+		switch (Math.floor((Math.random() * 3) + 1))
+		{
+		case 1: 
+			msg.reply("scissor! ahw i lose :c");
+			break;
+		case 2: 
+			msg.reply("rock! draw! o:");
+			break;
+		case 3: 
+			msg.reply("paper! woop woop i win!");
+			break;
+		default: 
+			msg.reply("error!");
 		}
 	}
 	else if (msg.content.toLowerCase().startsWith(prefix + "paper"))
 	{
-		switch (Math.floor((Math.random() * 3) + 1)){
-		case 1: msg.reply("scissor! woop woop i win!");
-		break;
-		case 2: msg.reply("rock! ahw i lose :c");
-		break;
-		case 3: msg.reply("paper! draw! o:");
-		break;
-		default: msg.reply("error!");
+		switch (Math.floor((Math.random() * 3) + 1))
+		{
+			case 1: 
+				msg.reply("scissor! woop woop i win!");
+				break;
+			case 2: 
+				msg.reply("rock! ahw i lose :c");
+				break;
+			case 3: 
+				msg.reply("paper! draw! o:");
+				break;
+			default: 
+				msg.reply("error!");
 		}
 	}
 	else if (msg.content.toLowerCase().startsWith(prefix + "scissor"))
 	{
-		switch (Math.floor((Math.random() * 3) + 1)){
-		case 1: msg.reply("scissor! draw! o:");
-		break;
-		case 2: msg.reply("rock! woop woop i win!");
-		break;
-		case 3: msg.reply("paper! ahw i lose :c");
-		break;
-		default: msg.reply("error!");
+		switch (Math.floor((Math.random() * 3) + 1))
+		{
+			case 1: 
+				msg.reply("scissor! draw! o:");
+				break;
+			case 2: 
+				msg.reply("rock! woop woop i win!");
+				break;
+			case 3: 
+				msg.reply("paper! ahw i lose :c");
+				break;
+			default: 
+				msg.reply("error!");
 		}
 	}
 	else if (msg.content.toLowerCase().startsWith(prefix + "shoot"))
 	{
-		if(msg.mentions.users.size === 0){
-			switch (Math.floor((Math.random() * 6) + 1)){
-				case 1: msg.reply(`you shot yourself!`);
-				break;
-				case 2: msg.reply(`you attempt to shoot yourself, and wow lucky! you live!`);
-				break;
-				case 3: msg.reply(`you tried to shoot yourself but you missed and shot your friend`);
-				break;
-				case 4: msg.reply(`you shot yourself but managed to live through you'll forever have a scar`);
-				break;
-				case 5: msg.reply(`woop woop! as you try to shoot yourself the police storms in and shoots you because you're black`);
-				break;
-				case 6: msg.reply(`you shot yourself, you ded boi`);
-				break;
-				default: msg.reply("error");
+		if(msg.mentions.users.size === 0)
+		{
+			switch (Math.floor((Math.random() * 6) + 1))
+			{
+				case 1: 
+					msg.reply(`you shot yourself!`);
+					break;
+				case 2: 
+					msg.reply(`you attempt to shoot yourself, and wow lucky! you live!`);
+					break;
+				case 3: 
+					msg.reply(`you tried to shoot yourself but you missed and shot your friend`);
+					break;
+				case 4: 
+					msg.reply(`you shot yourself but managed to live through you'll forever have a scar`);
+					break;
+				case 5: 
+					msg.reply(`woop woop! as you try to shoot yourself the police storms in and shoots you because you're black`);
+					break;
+				case 6: 
+					msg.reply(`you shot yourself, you ded boi`);
+					break;
+				default: 
+					msg.reply("error");
 			}
 		}
-		else if (msg.mentions.users.first()){
-			switch (Math.floor((Math.random() * 6) + 1)){
-				case 1: msg.reply(`shoots ${msg.mentions.users.first()} oh great, ${msg.author} managed to shoot himself`);
-				break;
-				case 2: msg.reply(`shoots ${msg.mentions.users.first()} and misses completely!`);
-				break;
-				case 3: msg.reply(`shoots ${msg.mentions.users.first()} you ded boi`);
-				break;
-				case 4: msg.reply(`shoots ${msg.mentions.users.first()} and misses by a mile!`);
-				break;
-				case 5: msg.reply(`attempts to shoot ${msg.mentions.users.first()} but ${msg.author} is out of bullets`);
-				break;
-				case 6: msg.reply(`shoots ${msg.mentions.users.first()} headshot!`);
-				break;
-				default: msg.reply("error");
+		else if (msg.mentions.users.first())
+		{
+			switch (Math.floor((Math.random() * 6) + 1))
+			{
+				case 1: 
+					msg.reply(`shoots ${msg.mentions.users.first()} oh great, ${msg.author} managed to shoot himself`);
+					break;
+				case 2: 
+					msg.reply(`shoots ${msg.mentions.users.first()} and misses completely!`);
+					break;
+				case 3: 
+					msg.reply(`shoots ${msg.mentions.users.first()} you ded boi`);
+					break;
+				case 4: 
+					msg.reply(`shoots ${msg.mentions.users.first()} and misses by a mile!`);
+					break;
+				case 5: 
+					msg.reply(`attempts to shoot ${msg.mentions.users.first()} but ${msg.author} is out of bullets`);
+					break;
+				case 6: 
+					msg.reply(`shoots ${msg.mentions.users.first()} headshot!`);
+					break;
+				default: 
+					msg.reply("error");
 			}
 		}
 	}
@@ -211,47 +250,56 @@ bot.on("message", msg => {
 	}
 	else if (msg.content.toLowerCase().startsWith(prefix + "avatar"))
 	{
-		if(msg.mentions.users.size === 0){
+		if(msg.mentions.users.size === 0)
+		{
 			msg.reply(msg.author.avatarURL);
 		}
-		else if (msg.mentions.users.first()){
+		else if (msg.mentions.users.first())
+		{
 			msg.reply(msg.mentions.users.first().avatarURL);
 		}
 	}
-	else if (msg.content.toLowerCase().startsWith(prefix + "dm")){
-        if (msg.mentions.users.size === 0){
+	else if (msg.content.toLowerCase().startsWith(prefix + "dm"))
+	{
+        if (msg.mentions.users.size === 0)
+		{
 			msg.reply("please choose a user to dm");
 		}
-		else if (msg.content.toLowerCase().startsWith(prefix + "dm") && msg.mentions.users.first()){
+		else if (msg.content.toLowerCase().startsWith(prefix + "dm") && msg.mentions.users.first())
+		{
 			msg.reply("dming user!");
 			msg.mentions.users.first().sendMessage(`from ${msg.author.username}: ${msg.content.split(" ").slice(2).join(" ")}`);
 		}
     }
-	else if (msg.content.toLowerCase().startsWith(prefix + "secretdm")){
-        if (msg.mentions.users.size === 0){
+	else if (msg.content.toLowerCase().startsWith(prefix + "secretdm"))
+	{
+        if (msg.mentions.users.size === 0)
+		{
 			msg.channel.sendMessage("please choose a user to dm");
 		}
-		else if (msg.content.toLowerCase().startsWith(prefix + "secretdm") && msg.mentions.users.first()){
-			if (msg.mentions.users.first().id === tokens.adminID){
-			msg.delete()
-			msg.mentions.users.first().sendMessage(`from ${msg.author.username}: ${msg.content.split(" ").slice(2).join(" ")}`);
-			msg.channel.sendMessage("done!")
-			.then((msg) => {
-			msg.delete(3000);
-			});
+		else if (msg.content.toLowerCase().startsWith(prefix + "secretdm") && msg.mentions.users.first())
+		{
+			if (msg.mentions.users.first().id === tokens.adminID)
+			{
+				msg.delete()
+				msg.mentions.users.first().sendMessage(`from ${msg.author.username}: ${msg.content.split(" ").slice(2).join(" ")}`);
+				msg.channel.sendMessage("done!")
+				.then((msg) => {
+				msg.delete(3000);
+				});
 			}
-			else {
-			msg.delete()
-			msg.mentions.users.first().sendMessage(`from anon: ${msg.content.split(" ").slice(2).join(" ")}`);
-			msg.channel.sendMessage("done!")
-			.then((msg) => {
-			msg.delete(3000);
-			});
+			else 
+			{
+				msg.delete()
+				msg.mentions.users.first().sendMessage(`from anon: ${msg.content.split(" ").slice(2).join(" ")}`);
+				msg.channel.sendMessage("done!")
+				.then((msg) => {
+				msg.delete(3000);
+				});
 			}
 		}
     }
 });
-
 
 var responseObject = {
   "ayy": "lmao!",
@@ -282,16 +330,16 @@ var responseObject = {
   "Boop": "http://i.imgur.com/356KCZJ.gifv",
 };
 
-
 bot.on('message', (msg) => {
-  if(responseObject[msg.content]) {
-    msg.channel.sendMessage(responseObject[msg.content]);
-  }
+	if(responseObject[msg.content]) 
+	{
+		msg.channel.sendMessage(responseObject[msg.content]);
+	}
 });
 
-
 bot.on("message", msg => {
-	if (msg.channel.type === "dm"){
+	if (msg.channel.type === "dm")
+	{
 		console.log(`DM from ${msg.author.username}: ${msg}`.green);
 		fs.appendFile('E:/!a javascript/dmlogs.txt', `DM from ${msg.author.username}: ${msg} \r\n`, (err) => {
 		if (err) throw err;
@@ -300,148 +348,151 @@ bot.on("message", msg => {
 	}
 });
 
-
 bot.on('message', msg => {
-		if(msg.content.toLowerCase().includes("shit bot") || msg.content.toLowerCase().includes("fgt") || msg.content.toLowerCase().includes("faggot") || msg.content.toLowerCase().includes("fag")){
-			msg.delete()
+	if(msg.content.toLowerCase().includes("shit bot") || msg.content.toLowerCase().includes("fgt") || msg.content.toLowerCase().includes("faggot") || msg.content.toLowerCase().includes("fag"))
+	{
+		msg.delete()
 		.then(msg => console.log(`Deleted msg from ${msg.author} ${msg.member.user.username}: ${msg}`.red));
 		msg.reply("no, bad!");
 		fs.appendFile('E:/!a javascript/deletelogs.txt', `Deleted msg from ${msg.author} ${msg.member.user.username}: ${msg} \r\n`, (err) => {
 		if (err) throw err;
 			console.log('written to file');
 		});
-		}
-});
-
-//rate waifu and reply
-bot.on('message', msg => {
-		if(msg.content.toLowerCase() === ("rate waifu") || msg.content.toLowerCase() === ("rate my waifu")){
-			const randomnumber = Math.floor((Math.random() * 10) + 1);
-			if (randomnumber === 1)
-				msg.reply("http://0.media.dorkly.cvcdn.com/97/85/d89d8febb4d1b180e3d26cfe3391d7ca.jpg");
-			else if (randomnumber === 2)
-				msg.reply("http://data.whicdn.com/images/184771330/large.jpg");
-			else if (randomnumber === 3)
-				msg.reply("your waifu is pretty shit 3/10 ");
-			else if (randomnumber === 4)
-				msg.reply("your waifu is okay i guess 4/10");
-			else if (randomnumber === 5)
-				msg.reply("literally most average waifu i've ever seen");
-			else if (randomnumber === 6)
-				msg.reply("okay, your waifu is not bad 6/10");
-			else if (randomnumber === 7)
-				msg.reply("nice waifu 7/10");
-			else if (randomnumber === 8)
-				msg.reply("hey, that's a pretty nice waifu you got there");
-			else if (randomnumber === 9)
-				msg.reply("best waifu");
-			else if (randomnumber === 10)
-				msg.reply("error waifu rating off the scale");
-			else {
-				msg.reply("error");
-			}
-		}
-});
-
-
-bot.on('message', msg => {
-	if (msg.content.toLowerCase() === ("roll d20") || msg.content.toLowerCase() === ("roll d10") || msg.content.toLowerCase() === ("roll d8") || msg.content.toLowerCase() === ("roll d6") || msg.content.toLowerCase() === ("roll d4")){
-			if (msg.content.toLowerCase() === ("roll d20")){
-				var xrandom = 20;
-			}
-			else if (msg.content.toLowerCase() === ("roll d10")){
-				var xrandom = 10;
-			}
-			else if (msg.content.toLowerCase() === ("roll d8")){
-				var xrandom = 8;
-			}
-			else if (msg.content.toLowerCase() === ("roll d6")){
-				xrandom = 6
-			}
-			else if (msg.content.toLowerCase() === ("roll d4")){
-				xrandom = 4
-			}
-			switch (Math.floor((Math.random() * xrandom) + 1)){
-				case 1:
-					msg.reply("rip, you rolled a 1");
-					break;
-				case 2:
-					msg.reply("you rolled a 2");
-					break;
-				case 3:
-					msg.reply("you rolled a 3");
-					break;
-				case 4:
-					msg.reply("you rolled a 4");
-					break;
-				case 5:
-					msg.reply("you rolled a 5");
-					break;
-				case 6:
-					msg.reply("you rolled a 6");
-					break;
-				case 7:
-					msg.reply("you rolled a 7");
-					break;
-				case 8:
-					msg.reply("you rolled a 8");
-					break;
-				case 9:
-					msg.reply("you rolled a 9");
-					break;
-				case 10:
-					msg.reply("you rolled a 10");
-					break;
-				case 11:
-					msg.reply("you rolled a 11");
-					break;
-				case 12:
-					msg.reply("you rolled a 12");
-					break;
-				case 13:
-					msg.reply("you rolled a 13");
-					break;
-				case 14:
-					msg.reply("you rolled a 14");
-					break;
-				case 15:
-					msg.reply("you rolled a 15");
-					break;
-				case 16:
-					msg.reply("you rolled a 16");
-					break;
-				case 17:
-					msg.reply("you rolled a 17");
-					break;
-				case 18:
-					msg.reply("you rolled a 18");
-					break;
-				case 19:
-					msg.reply("you rolled a 19");
-					break;
-				case 20:
-					msg.reply("woop woop! you rolled a 20");
-					break;
-				default:
-					msg.reply("error");
-			}
 	}
 });
 
+bot.on('message', msg => {
+	if(msg.content.toLowerCase() === ("rate waifu") || msg.content.toLowerCase() === ("rate my waifu"))
+	{
+		const randomnumber = Math.floor((Math.random() * 10) + 1);
+		if (randomnumber === 1)
+			msg.reply("http://0.media.dorkly.cvcdn.com/97/85/d89d8febb4d1b180e3d26cfe3391d7ca.jpg");
+		else if (randomnumber === 2)
+			msg.reply("http://data.whicdn.com/images/184771330/large.jpg");
+		else if (randomnumber === 3)
+			msg.reply("your waifu is pretty shit 3/10 ");
+		else if (randomnumber === 4)
+			msg.reply("your waifu is okay i guess 4/10");
+		else if (randomnumber === 5)
+			msg.reply("literally most average waifu i've ever seen");
+		else if (randomnumber === 6)
+			msg.reply("okay, your waifu is not bad 6/10");
+		else if (randomnumber === 7)
+			msg.reply("nice waifu 7/10");
+		else if (randomnumber === 8)
+			msg.reply("hey, that's a pretty nice waifu you got there");
+		else if (randomnumber === 9)
+			msg.reply("best waifu");
+		else if (randomnumber === 10)
+			msg.reply("error waifu rating off the scale");
+		else 
+		{
+			msg.reply("error");
+		}
+	}
+});
+
+bot.on('message', msg => {
+	if (msg.content.toLowerCase() === ("roll d20") || msg.content.toLowerCase() === ("roll d10") || msg.content.toLowerCase() === ("roll d8") || msg.content.toLowerCase() === ("roll d6") || msg.content.toLowerCase() === ("roll d4"))
+	{
+		if (msg.content.toLowerCase() === ("roll d20"))
+		{
+			var xrandom = 20;
+		}
+		else if (msg.content.toLowerCase() === ("roll d10"))
+		{
+			var xrandom = 10;
+		}
+		else if (msg.content.toLowerCase() === ("roll d8"))
+		{
+			var xrandom = 8;
+		}
+		else if (msg.content.toLowerCase() === ("roll d6"))
+		{
+			xrandom = 6
+		}
+		else if (msg.content.toLowerCase() === ("roll d4"))
+		{
+			xrandom = 4
+		}
+		switch (Math.floor((Math.random() * xrandom) + 1))
+		{
+			case 1:
+				msg.reply("rip, you rolled a 1");
+				break;
+			case 2:
+				msg.reply("you rolled a 2");
+				break;
+			case 3:
+				msg.reply("you rolled a 3");
+				break;
+			case 4:
+				msg.reply("you rolled a 4");
+				break;
+			case 5:
+				msg.reply("you rolled a 5");
+				break;
+			case 6:
+				msg.reply("you rolled a 6");
+				break;
+			case 7:
+				msg.reply("you rolled a 7");
+				break;
+			case 8:
+				msg.reply("you rolled a 8");
+				break;
+			case 9:
+				msg.reply("you rolled a 9");
+				break;
+			case 10:
+				msg.reply("you rolled a 10");
+				break;
+			case 11:
+				msg.reply("you rolled a 11");
+				break;
+			case 12:
+				msg.reply("you rolled a 12");
+				break;
+			case 13:
+				msg.reply("you rolled a 13");
+				break;
+			case 14:
+				msg.reply("you rolled a 14");
+				break;
+			case 15:
+				msg.reply("you rolled a 15");
+				break;
+			case 16:
+				msg.reply("you rolled a 16");
+				break;
+			case 17:
+				msg.reply("you rolled a 17");
+				break;
+			case 18:
+				msg.reply("you rolled a 18");
+				break;
+			case 19:
+				msg.reply("you rolled a 19");
+				break;
+			case 20:
+				msg.reply("woop woop! you rolled a 20");
+				break;
+			default:
+				msg.reply("error");
+		}
+	}
+});
 
 bot.on('ready', () => {
   console.log('I am ready!'.yellow);
   bot.user.setGame("twofists slave");
 });
 
-
 bot.on('error', e => { console.error(e); });
-
 
 bot.on('message', msg => {
 	if (!msg.content.startsWith(tokens.prefix)) return;
 	if (commands.hasOwnProperty(msg.content.toLowerCase().slice(tokens.prefix.length).split(' ')[0])) commands[msg.content.toLowerCase().slice(tokens.prefix.length).split(' ')[0]](msg);
 });
-
 
 bot.login(tokens.d_token);
