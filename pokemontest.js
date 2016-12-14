@@ -1,7 +1,15 @@
 //only works once, then it replies with "undefined" or just nothing at all
 // http://puu.sh/sOVrN.png
-//on first use >done1 >done2 >done3 >done4
-//on use after first use >done2 >done1 >done3 >done4
+
+//on first use (console log)
+//>done1 >done2 >done3 >done4
+
+//on use after first use (console log)
+//>done2 >done1 >done3 >done4
+
+
+//sometimes randomly it even goes (console log)
+//>done2 >done 1 >done 4 >done3
 
 
 bot.on('message', msg => {
