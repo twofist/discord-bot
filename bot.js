@@ -146,14 +146,17 @@ bot.on("message", msg => {
 	else if (msg.content.startsWith(prefix + "pokemon"))
 		{
 			if(msg.content.split(" ").slice(1, 2).join(" ") > 11) return;
-			msg.reply("#" + pkmn.getPokemonIdByName(msg.content.split(" ").slice(1, 2).join(" ")) + 
-			" " + msg.content.split(" ").slice(1, 2).join(" ") +
-			"```" + 
-			"\nHP Att Def SpA SpD Spd\n" +
-			baseStats.getByName({ name: msg.content.split(" ").slice(1, 2).join(" ") }) +
-			"\nhttp://bulbapedia.bulbagarden.net/wiki/" + msg.content.split(" ").slice(1, 2).join(" ") + "_(Pok%C3%A9mon)\n" +
-			"```" +
-			pokemonGif(msg.content.split(" ").slice(1, 2).join(" "))	);
+			if(pkmn.getPokemonIdByName(msg.content.split(" ").slice(1, 2).join(" ")))
+			{
+				msg.reply("#" + pkmn.getPokemonIdByName(msg.content.split(" ").slice(1, 2).join(" ")) + 
+				" " + msg.content.split(" ").slice(1, 2).join(" ") +
+				"```" + 
+				"\nHP Att Def SpA SpD Spd\n" +
+				baseStats.getByName({ name: msg.content.split(" ").slice(1, 2).join(" ") }) +
+				"\nhttp://bulbapedia.bulbagarden.net/wiki/" + msg.content.split(" ").slice(1, 2).join(" ") + "_(Pok%C3%A9mon)\n" +
+				"```" +
+				pokemonGif(msg.content.split(" ").slice(1, 2).join(" "))	);
+			}
 		}
 	else if (msg.content.toLowerCase().startsWith(prefix + "help"))
 	{
