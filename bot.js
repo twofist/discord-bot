@@ -4,6 +4,9 @@ const tokens = require('./tokens.json');
 const bot = new Discord.Client();
 const colors = require('colors');
 const fs = require('fs');
+const baseStats = require('pokemon-base-stats')
+const pokemonGif = require('pokemon-gif');
+const pkmn = require('pokename')("en");
 
 
 bot.on("ready", () => {
@@ -54,13 +57,15 @@ const commands = {
 					if (Math.round(dispatcher.volume*50) >= 100) return msg.channel.sendMessage(`Volume: ${Math.round(dispatcher.volume*50)}%`);
 					dispatcher.setVolume(Math.min((dispatcher.volume*50 + (2*(m.content.split('+').length-1)))/50,2));
 					msg.channel.sendMessage(`Volume: ${Math.round(dispatcher.volume*50)}%`);
+					
 				} 
 				else if (m.content.startsWith('volume-'))
 				{
 					if (Math.round(dispatcher.volume*50) <= 0) return msg.channel.sendMessage(`Volume: ${Math.round(dispatcher.volume*50)}%`);
 					dispatcher.setVolume(Math.max((dispatcher.volume*50 - (2*(m.content.split('-').length-1)))/50,0));
 					msg.channel.sendMessage(`Volume: ${Math.round(dispatcher.volume*50)}%`);
-				} 
+					
+				}
 				else if (m.content.startsWith(tokens.prefix + 'time'))
 				{
 					msg.channel.sendMessage(`time: ${Math.floor(dispatcher.time / 60000)}:${Math.floor((dispatcher.time % 60000)/1000) <10 ? '0'+Math.floor((dispatcher.time % 60000)/1000) : Math.floor((dispatcher.time % 60000)/1000)}`);
@@ -138,6 +143,18 @@ bot.on("message", msg => {
 		message.edit(`pong! ${message.createdTimestamp - msg.createdTimestamp}ms`);
 		});
     }
+	else if (msg.content.startsWith(prefix + "pokemon"))
+		{
+			if(msg.content.split(" ").slice(1, 2).join(" ") > 11) return;
+			msg.reply("#" + pkmn.getPokemonIdByName(msg.content.split(" ").slice(1, 2).join(" ")) + 
+			" " + msg.content.split(" ").slice(1, 2).join(" ") +
+			"```" + 
+			"\nHP Att Def SpA SpD Spd\n" +
+			baseStats.getByName({ name: msg.content.split(" ").slice(1, 2).join(" ") }) +
+			"\nhttp://bulbapedia.bulbagarden.net/wiki/" + msg.content.split(" ").slice(1, 2).join(" ") + "_(Pok%C3%A9mon)\n" +
+			"```" +
+			pokemonGif(msg.content.split(" ").slice(1, 2).join(" "))	);
+		}
 	else if (msg.content.toLowerCase().startsWith(prefix + "help"))
 	{
 		msg.channel.sendMessage("```" +
@@ -146,6 +163,7 @@ bot.on("message", msg => {
 		"\nrate waifu"+
 		"\nroll d4, roll d6, roll d8, roll d10, roll d20"+
 		"\n!rock, !paper, !scissor"+
+		"\n!pokemon name (capitalize the first letter of the pokemon name)"+
 		"\n!anime nsfw, !furry nsfw"+
 		"\n!shoot @username"+
 		"\n!myavatar"+
