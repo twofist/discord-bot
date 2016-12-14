@@ -7,7 +7,8 @@ const fs = require('fs');
 const baseStats = require('pokemon-base-stats')
 const pokemonGif = require('pokemon-gif');
 const pkmn = require('pokename')("en");
-
+var cleverbot = require("cleverbot.io");
+var test = new cleverbot(tokens.c_user, tokens.c_key);
 
 bot.on("ready", () => {
     console.log(`Ready to serve in ${bot.channels.size} channels on ${bot.guilds.size} servers, for a total of ${bot.users.size} users.`.yellow);
@@ -136,33 +137,44 @@ bot.on("message", msg => {
 	let prefix = "!";
 	if(!msg.content.startsWith(prefix)) return;
 	if(msg.author.bot) return;
-    if (msg.content.toLowerCase().startsWith(prefix + "ping")) 
+	if (msg.content.toLowerCase().startsWith(prefix + "ping")) 
 	{
         msg.channel.sendMessage("pong!")
 		.then((message) => {
 		message.edit(`pong! ${message.createdTimestamp - msg.createdTimestamp}ms`);
 		});
-    }
-	else if (msg.content.startsWith(prefix + "pokemon"))
+   	}
+	else if(msg.content.startsWith(prefix + "talk"))
+	{
+		test.setNick(msg.author)
+		test.create(function (err, session) 
 		{
-			if(msg.content.split(" ").slice(1, 2).join(" ") > 11) return;
-			if(pkmn.getPokemonIdByName(msg.content.split(" ").slice(1, 2).join(" ")))
-			{
-				msg.reply("#" + pkmn.getPokemonIdByName(msg.content.split(" ").slice(1, 2).join(" ")) + 
-				" " + msg.content.split(" ").slice(1, 2).join(" ") +
-				"```" + 
-				"\nHP Att Def SpA SpD Spd\n" +
-				baseStats.getByName({ name: msg.content.split(" ").slice(1, 2).join(" ") }) +
-				"\nhttp://bulbapedia.bulbagarden.net/wiki/" + msg.content.split(" ").slice(1, 2).join(" ") + "_(Pok%C3%A9mon)\n" +
-				"```" +
-				pokemonGif(msg.content.split(" ").slice(1, 2).join(" "))	);
-			}
+			test.ask(msg.content.split(" ").slice(1).join(" "), function (err, response) {
+			msg.reply(response);
+			});
+		});
+	}
+	else if (msg.content.startsWith(prefix + "pokemon"))
+	{
+		if(msg.content.split(" ").slice(1, 2).join(" ") > 11) return;
+		if(pkmn.getPokemonIdByName(msg.content.split(" ").slice(1, 2).join(" ")))
+		{
+			msg.reply("#" + pkmn.getPokemonIdByName(msg.content.split(" ").slice(1, 2).join(" ")) + 
+			" " + msg.content.split(" ").slice(1, 2).join(" ") +
+			"```" + 
+			"\nHP Att Def SpA SpD Spd\n" +
+			baseStats.getByName({ name: msg.content.split(" ").slice(1, 2).join(" ") }) +
+			"\nhttp://bulbapedia.bulbagarden.net/wiki/" + msg.content.split(" ").slice(1, 2).join(" ") + "_(Pok%C3%A9mon)\n" +
+			"```" +
+			pokemonGif(msg.content.split(" ").slice(1, 2).join(" "))	);
 		}
+	}
 	else if (msg.content.toLowerCase().startsWith(prefix + "help"))
 	{
 		msg.channel.sendMessage("```" +
 		"type ++help for music bot commands"+
 		"\n!stats"+
+		"\n!talk msg (talk to cleverbot)" +
 		"\nrate waifu"+
 		"\nroll d4, roll d6, roll d8, roll d10, roll d20"+
 		"\n!rock, !paper, !scissor"+
