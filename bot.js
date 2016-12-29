@@ -12,7 +12,7 @@ const cleverlogin = new cleverbot(tokens.c_user, tokens.c_key);
 const translate = require('google-translate-api');
 
 bot.on("ready", () => {
-    console.log(`Ready to serve in ${bot.channels.size} channels on ${bot.guilds.size} servers, for a total of ${bot.users.size} users.`.yellow);
+	console.log(`Ready to serve in ${bot.channels.size} channels on ${bot.guilds.size} servers, for a total of ${bot.users.size} users.`.yellow	);
 });
 
 let points = JSON.parse(fs.readFileSync('E:/!a javascript/levelcount.json', 'utf8'));
@@ -20,7 +20,7 @@ bot.on("message", msg => {
 	if(msg.author.bot) return;
 	if(!points[msg.author.id])
 	{
-		points[msg.author.id] = {exp: 0, exptotal: 0, level: 1, hp: 15, att: 3, spd: 4, rep: 0, wins: 0, losses: 0, notice: 1};
+		points[msg.author.id] = {exp: 0, exptotal: 0, level: 1, hp: 15, att: 3, spd: 4, rep: 0, wins: 0, losses: 0, notice: 1, noticed: 0};
 	}
 	if(msg.content.length > 200)
 	{
@@ -31,6 +31,34 @@ bot.on("message", msg => {
 	{
 		points[msg.author.id].exp = points[msg.author.id].exp + Math.floor((msg.content.length / 5));
 		points[msg.author.id].exptotal = points[msg.author.id].exptotal + Math.floor((msg.content.length / 5));
+	}
+	if (points[msg.author.id].noticed >= 0 && points[msg.author.id].noticed <= 4)
+	{
+		if (points[msg.author.id].rep >= 50 && points[msg.author.id].rep < 100 && points[msg.author.id].noticed === 0)
+		{
+			msg.reply("you currently have 50 rep, if you want to spend them to gain 5 hp type: *!spend 50*");
+			points[msg.author.id].noticed = 1;
+		}
+		else if (points[msg.author.id].rep >= 100 && points[msg.author.id].rep < 250 && points[msg.author.id].noticed === 1)
+		{		
+			msg.reply("you currently have 100 rep, if you want to spend them to gain 10 hp and 2 attack type: *!spend 50*");
+			points[msg.author.id].noticed = 2;
+		}
+		else if (points[msg.author.id].rep >= 250 && points[msg.author.id].rep < 500 && points[msg.author.id].noticed === 2)
+		{		
+			msg.reply("you currently have 250 rep, if you want to spend them to gain 20 hp and 4 attack and 3 speed type: *!spend 50*");
+			points[msg.author.id].noticed = 3;
+		}
+		else if (points[msg.author.id].rep >= 500 && points[msg.author.id].rep < 1000 && points[msg.author.id].noticed === 3)
+		{		
+			msg.reply("you currently have 500 rep, if you want to spend them to gain 45 hp and 10 attack and 8 speed type: *!spend 50*");
+			points[msg.author.id].noticed = 4;
+		}
+		else if (points[msg.author.id].rep >= 1000 && points[msg.author.id].noticed === 4)
+		{		
+			msg.reply("you currently have 1000 rep, if you want to spend them to gain 100 hp and 25 attack and 20 speed type: *!spend 50*");
+			points[msg.author.id].noticed = 5;
+		}		
 	}
 	levelup = (points[msg.author.id].level * 20);
 	if (points[msg.author.id].exp >= levelup)
@@ -124,7 +152,7 @@ bot.on("message", msg => {
 		}
 		if(!points[msg.mentions.users.first().id])
 		{
-			points[msg.mentions.users.first().id] = {exp: 0, exptotal: 0, level: 1, hp: 15, att: 3, spd: 4, rep: 0, wins: 0, losses: 0, notice: 1};
+			points[msg.mentions.users.first().id] = {exp: 0, exptotal: 0, level: 1, hp: 15, att: 3, spd: 4, rep: 0, wins: 0, losses: 0, notice: 1, noticed: 0};
 		}	
 		let thatuser = points[msg.mentions.users.first().id];
 		msg.reply("\n" + msg.mentions.users.first() + " stats:" +
@@ -139,6 +167,76 @@ bot.on("message", msg => {
 		"    att: " + thatuser.att +
 		"    	 spd: " + thatuser.spd +
 		"```");
+	}
+	if (msg.content.toLowerCase().startsWith(prefix + "rep"))
+	{
+		msg.reply("you can spend an amount of rep you have to gain stats by typing !spend amount, example: *!spend 50*, the amounts you can spend are: 50, 100, 250, 500 and 1000" +
+		"\nthe amount of stats you gain will depend on how much you spend, the more you spend the more you gain." +
+		"\nspend 50 rep to permanently gain 5 hp" +
+		"\nspend 100 rep to permanently gain 10 hp and 2 attack" +
+		"\nspend 250 rep to permanently gain 20 hp and 4 attack and 3 speed" +
+		"\nspend 500 rep to permanently gain 45 hp and 10 attack and 8 speed" +
+		"\nspend 1000 rep to permanently gain 100 hp, 25 attack and 20 speed");
+	}
+	if (msg.content.toLowerCase().startsWith(prefix + "spend"))
+	{
+		let thisuser = points[msg.author.id];
+		let number1 = msg.content.split(" ").slice(1, 2).join(" ");
+		let isnumber = isNaN(number1);
+		if (isnumber === true)
+		{
+			msg.reply("please insert a number, *example: !spend 100*");
+			return;
+		}
+		let number = Number(number1);
+		if(thisuser.rep < 50 || thisuser.rep < number)
+		{
+			msg.reply("you do not have enough rep to spend")
+			return;
+		}
+		if(number === 50 || number === 100 || number === 250 || number === 500 || number === 1000)
+		{
+			knowhp = thisuser.hp;
+			knowatt = thisuser.att;
+			knowspd = thisuser.spd;
+			thisuser.rep = thisuser.rep - msg.content.split(" ").slice(1, 2).join(" ");
+			switch (number)
+			{
+				case 50: 
+					thisuser.hp = thisuser.hp + 5;
+					break;
+				case 100: 
+					thisuser.hp = thisuser.hp + 10;
+					thisuser.att = thisuser.att + 2;
+					break;
+				case 250: 
+					thisuser.hp = thisuser.hp + 20;
+					thisuser.att = thisuser.att + 4;
+					thisuser.spd = thisuser.spd + 3;
+					break;
+				case 500:
+					thisuser.hp = thisuser.hp + 45;
+					thisuser.att = thisuser.att + 10;
+					thisuser.spd = thisuser.spd + 8;
+					break;
+				default: 
+					thisuser.hp = thisuser.hp + 100;
+					thisuser.att = thisuser.att + 25;
+					thisuser.spd = thisuser.spd + 20;
+			}
+			knowhp = thisuser.hp - knowhp;
+			knowatt = thisuser.att - knowatt;
+			knowspd = thisuser.spd - knowspd;
+			msg.reply("you have spent: " + number + " rep, and you have gained" +
+			"\nhp: " + knowhp +
+			"\nattack: " + knowatt +
+			"\nspeed: " + knowspd);
+			thisuser.noticed = 0;
+		}
+		else
+		{
+			msg.reply("please choose one of the following amount of rep to spend: 50, 100, 250, 500 or 1000");
+		}
 	}
 	if (msg.content.toLowerCase().startsWith(prefix + "fight"))
 	{
@@ -258,6 +356,7 @@ bot.on("message", msg => {
 				{
 					break;
 				}
+				
 			}
 		}
 		else
@@ -266,8 +365,7 @@ bot.on("message", msg => {
 		}
 		if (thisuser.hp <= 0)
 		{
-			msg.channel.sendMessage(msg.author + " vs " + msg.mentions.users.first() + 
-			"\n" + msg.mentions.users.first() + " has won the battle with " + thatuser.hp + " hp remaining");
+			remaininghp = thatuser.hp;
 			thisuser.hp = thisuserreset;
 			thatuser.hp = thatuserreset;
 			gainedexp = thatuser.exp;
@@ -282,10 +380,10 @@ bot.on("message", msg => {
 			}
 			else if (thatuser.level < thisuser.level)
 			{
-				thatuser.exp = thatuser.exp + (10 + (thatuser.level * 2) - (thatuser.level - thisuser.level));
+				thatuser.exp = thatuser.exp + (10 + (thatuser.level * 2) + (thatuser.level - thisuser.level));
 				thatuser.rep = thatuser.rep + (10 - (thatuser.level - thisuser.level));
 				thisuser.rep = thisuser.rep - (10 - (thisuser.level - thatuser.level));
-				thatuser.exptotal = thatuser.exptotal + (10 + (thatuser.level * 2) - (thatuser.level - thisuser.level));
+				thatuser.exptotal = thatuser.exptotal + (10 + (thatuser.level * 2) + (thatuser.level - thisuser.level));
 			}
 			else
 			{
@@ -299,13 +397,14 @@ bot.on("message", msg => {
 			gainedexp = thatuser.exp - gainedexp;
 			gainedrep = thatuser.rep - gainedrep;
 			lostrep = thisuser.rep - lostrep;
-			msg.channel.sendMessage(msg.mentions.users.first() + " has gained: " + gainedexp + " exp and: " + gainedrep + " rep." + 
+			msg.channel.sendMessage(msg.author + " vs " + msg.mentions.users.first() + 
+			"\n" + msg.mentions.users.first() + " has won the battle with " + remaininghp + " hp remaining" + 
+			"\n" + msg.mentions.users.first() + " has gained: " + gainedexp + " exp and: " + gainedrep + " rep." + 
 			"\nsadly, " + msg.author + " lost: " + lostrep + " rep.");
 		}
 		else if (thatuser.hp <= 0)
 		{
-			msg.channel.sendMessage(msg.author + " vs " + msg.mentions.users.first() + 
-			"\n" + msg.author + " has won the battle with " + thisuser.hp + " hp remaining");
+			remaininghp = thisuser.hp;
 			thisuser.hp = thisuserreset;
 			thatuser.hp = thatuserreset;
 			gainedexp = thisuser.exp;
@@ -320,10 +419,10 @@ bot.on("message", msg => {
 			}
 			else if (thisuser.level < thatuser.level)
 			{
-				thisuser.exp = thisuser.exp + (10 + (thisuser.level * 2) - (thisuser.level - thatuser.level));
+				thisuser.exp = thisuser.exp + (10 + (thisuser.level * 2) + (thisuser.level - thatuser.level));
 				thisuser.rep = thisuser.rep + (10 - (thisuser.level - thatuser.level));
 				thatuser.rep = thatuser.rep - (10 - (thatuser.level - thisuser.level));
-				thisuser.exptotal = thisuser.exptotal + (10 + (thisuser.level * 2) - (thisuser.level - thatuser.level));
+				thisuser.exptotal = thisuser.exptotal + (10 + (thisuser.level * 2) + (thisuser.level - thatuser.level));
 			}
 			else
 			{
@@ -337,7 +436,9 @@ bot.on("message", msg => {
 			gainedexp = thisuser.exp - gainedexp;
 			gainedrep = thisuser.rep - gainedrep;
 			lostrep = thatuser.rep - lostrep;
-			msg.channel.sendMessage(msg.author + " has gained: " + gainedexp + " exp and: " + gainedrep + " rep." + 
+			msg.channel.sendMessage(msg.author + " vs " + msg.mentions.users.first() + 
+			"\n" + msg.author + " has won the battle with " + remaininghp + " hp remaining" + 
+			"\n" + msg.author + " has gained: " + gainedexp + " exp and: " + gainedrep + " rep." + 
 			"\nsadly, " + msg.mentions.users.first() + " lost: " + lostrep + " rep.");
 		}
 	}
@@ -465,13 +566,13 @@ bot.on("message", msg => {
 	let prefix = "!";
 	if(!msg.content.startsWith(prefix)) return;
 	if(msg.author.bot) return;
-	if (msg.content.toLowerCase().startsWith(prefix + "ping")) 
+    if (msg.content.toLowerCase().startsWith(prefix + "ping")) 
 	{
         msg.channel.sendMessage("pong!")
 		.then((message) => {
 		message.edit(`pong! ${message.createdTimestamp - msg.createdTimestamp}ms`);
 		});
-   	}
+    }
 	else if(msg.content.toLowerCase().startsWith(prefix + "translate"))
 	{
 		translate(msg.content.split(" ").slice(3).join(" "), {from: msg.content.split(" ").slice(1,2).join(" "), to: msg.content.split(" ").slice(2,3).join(" ") }).then(res => {
@@ -505,20 +606,20 @@ bot.on("message", msg => {
 		});
 	}
 	else if (msg.content.startsWith(prefix + "pokemon"))
-	{
-		if(msg.content.split(" ").slice(1, 2).join(" ") > 11) return;
-		if(pkmn.getPokemonIdByName(msg.content.split(" ").slice(1, 2).join(" ")))
 		{
-			msg.reply("#" + pkmn.getPokemonIdByName(msg.content.split(" ").slice(1, 2).join(" ")) + 
-			" " + msg.content.split(" ").slice(1, 2).join(" ") +
-			"```" + 
-			"\nHP Att Def SpA SpD Spd\n" +
-			baseStats.getByName({ name: msg.content.split(" ").slice(1, 2).join(" ") }) +
-			"\nhttp://bulbapedia.bulbagarden.net/wiki/" + msg.content.split(" ").slice(1, 2).join(" ") + "_(Pok%C3%A9mon)\n" +
-			"```" +
-			pokemonGif(msg.content.split(" ").slice(1, 2).join(" "))	);
+			if(msg.content.split(" ").slice(1, 2).join(" ") > 11) return;
+			if(pkmn.getPokemonIdByName(msg.content.split(" ").slice(1, 2).join(" ")))
+			{
+				msg.reply("#" + pkmn.getPokemonIdByName(msg.content.split(" ").slice(1, 2).join(" ")) + 
+				" " + msg.content.split(" ").slice(1, 2).join(" ") +
+				"```" + 
+				"\nHP Att Def SpA SpD Spd\n" +
+				baseStats.getByName({ name: msg.content.split(" ").slice(1, 2).join(" ") }) +
+				"\nhttp://bulbapedia.bulbagarden.net/wiki/" + msg.content.split(" ").slice(1, 2).join(" ") + "_(Pok%C3%A9mon)\n" +
+				"```" +
+				pokemonGif(msg.content.split(" ").slice(1, 2).join(" "))	);
+			}
 		}
-	}
 	else if (msg.content.toLowerCase().startsWith(prefix + "help"))
 	{
 		msg.channel.sendMessage("```" +
@@ -526,6 +627,8 @@ bot.on("message", msg => {
 		"\n!stats"+
 		"\n!level @username"+
 		"\n!fight @username" +
+		"\n!rep" +
+		"\n!spend amount (example: !spend 50)" +
 		"\n!translate from language to language msg (example: !translate en nl how are you?" +
 		"\n!talk msg (talk to cleverbot)" +
 		"\n!hug " +
@@ -545,13 +648,13 @@ bot.on("message", msg => {
 	}
 	else if (msg.content.toLowerCase().startsWith(prefix + "stats"))
 	{
-		msg.channel.sendMessage(`
-		Memory Usage: ${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)} MB 
-		\nUsers: ${bot.users.size} 
-		\nServers: ${bot.guilds.size} 
-		\nChannels: ${bot.channels.size} 
-		\nDiscord.js: v${Discord.version}
-		`);
+		msg.channel.sendMessage("```" +
+		`Memory Usage: ${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)} MB` + 
+		`\nUsers: ${bot.users.size}` +
+		`\nServers: ${bot.guilds.size}` +
+		`\nChannels: ${bot.channels.size}` +
+		`\nDiscord.js: v${Discord.version}` +
+		"```");
 	}
 	else if (msg.content.toLowerCase().startsWith(prefix + "furry nsfw"))
 	{
@@ -907,7 +1010,7 @@ bot.on('message', msg => {
 
 bot.on('ready', () => {
   console.log('I am ready!'.yellow);
-  bot.user.setGame("twofists slave");
+  bot.user.setGame("with twofist");
 });
 
 bot.on('error', e => { console.error(e); });
@@ -917,4 +1020,5 @@ bot.on('message', msg => {
 	if (commands.hasOwnProperty(msg.content.toLowerCase().slice(tokens.prefix.length).split(' ')[0])) commands[msg.content.toLowerCase().slice(tokens.prefix.length).split(' ')[0]](msg);
 });
 
+//how the bot logs in
 bot.login(tokens.d_token);
