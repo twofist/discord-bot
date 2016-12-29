@@ -7,15 +7,343 @@ const fs = require('fs');
 const baseStats = require('pokemon-base-stats')
 const pokemonGif = require('pokemon-gif');
 const pkmn = require('pokename')("en");
-var cleverbot = require("cleverbot.io");
-var test = new cleverbot(tokens.c_user, tokens.c_key);
+const cleverbot = require("cleverbot.io");
+const cleverlogin = new cleverbot(tokens.c_user, tokens.c_key);
+const translate = require('google-translate-api');
 
 bot.on("ready", () => {
     console.log(`Ready to serve in ${bot.channels.size} channels on ${bot.guilds.size} servers, for a total of ${bot.users.size} users.`.yellow);
 });
 
-let queue = {};
+let points = JSON.parse(fs.readFileSync('E:/!a javascript/levelcount.json', 'utf8'));
+bot.on("message", msg => {
+	if(msg.author.bot) return;
+	if(!points[msg.author.id])
+	{
+		points[msg.author.id] = {exp: 0, exptotal: 0, level: 1, hp: 15, att: 3, spd: 4, rep: 0, wins: 0, losses: 0, notice: 1};
+	}
+	if(msg.content.length > 200)
+	{
+		points[msg.author.id].exp = points[msg.author.id].exp + Math.floor((msg.content.length / 20));
+		points[msg.author.id].exptotal = points[msg.author.id].exptotal + Math.floor((msg.content.length / 20));
+	}
+	else
+	{
+		points[msg.author.id].exp = points[msg.author.id].exp + Math.floor((msg.content.length / 5));
+		points[msg.author.id].exptotal = points[msg.author.id].exptotal + Math.floor((msg.content.length / 5));
+	}
+	levelup = (points[msg.author.id].level * 20);
+	if (points[msg.author.id].exp >= levelup)
+	{
+		let thisuser = points[msg.author.id];
+		exprest = thisuser.exp - levelup;
+		thisuser.exp = 0 + exprest;
+		thisuser.level = thisuser.level + 1;
+		thisuser.notice = thisuser.notice + 1;
+		if(thisuser.notice === 5)
+		{
+			thisuser.notice = 0;
+			msg.channel.sendMessage(msg.author + " you have reached level: " + thisuser.level);
+		}
+		switch (Math.floor((Math.random() * 10) + 1))
+		{
+			case 1: 
+				hp = 8;
+				break;
+			case 2: 
+				hp = 7;
+				break;
+			case 3: 
+				hp = 7;
+				break;
+			case 4:
+				hp = 7;
+				break;
+			default: 
+				hp = 6;
+		}
+		switch (Math.floor((Math.random() * 10) + 1))
+		{
+			case 1: 
+				attack = 3;
+				break;
+			case 2: 
+				attack = 2;
+				break;
+			case 3: 
+				attack = 2;
+				break;
+			case 4:
+				attack = 2;
+				break;
+			default: 
+				attack = 1;
+		}
+		switch (Math.floor((Math.random() * 10) + 1))
+		{
+			case 1: 
+				speed = 3;
+				break;
+			case 2: 
+				speed = 2;
+				break;
+			case 3: 
+				speed = 2;
+				break;
+			case 4:
+				speed = 2;
+				break;
+			default: 
+				speed = 1;
+		}
+		thisuser.hp = thisuser.hp + hp
+		thisuser.att = thisuser.att + attack
+		thisuser.spd = thisuser.spd + speed
+	}
+	json = JSON.stringify(points, null, "\t");
+	fs.writeFile('E:/!a javascript/levelcount.json', json, 'utf8'); 	
+	let prefix = "!";
+	if(!msg.content.startsWith(prefix)) return;
+    if (msg.content.toLowerCase().startsWith(prefix + "level"))
+	{
+		if(msg.mentions.users.size === 0)
+		{
+			let thisuser = points[msg.author.id];
+			msg.reply("```" +
+			"\nlevel: " + thisuser.level +
+			"     exp: " + thisuser.exp + 
+			"	exptotal: " + thisuser.exptotal +
+			"\n  rep: " + thisuser.rep +
+			"   wins: " + thisuser.wins +
+			"   	losses: " + thisuser.losses +
+			"\n   hp: " + thisuser.hp +
+			"    att: " + thisuser.att +
+			"    	 spd: " + thisuser.spd +
+			"```");
+			return;
+		}
+		if(!points[msg.mentions.users.first().id])
+		{
+			points[msg.mentions.users.first().id] = {exp: 0, exptotal: 0, level: 1, hp: 15, att: 3, spd: 4, rep: 0, wins: 0, losses: 0, notice: 1};
+		}	
+		let thatuser = points[msg.mentions.users.first().id];
+		msg.reply("\n" + msg.mentions.users.first() + " stats:" +
+		"```" +
+		"\nlevel: " + thatuser.level +
+		"     exp: " + thatuser.exp + 
+		"	exptotal: " + thatuser.exptotal +
+		"\n  rep: " + thatuser.rep +
+		"   wins: " + thatuser.wins +
+		"   	losses: " + thatuser.losses +
+		"\n   hp: " + thatuser.hp +
+		"    att: " + thatuser.att +
+		"    	 spd: " + thatuser.spd +
+		"```");
+	}
+	if (msg.content.toLowerCase().startsWith(prefix + "fight"))
+	{
+		if(msg.mentions.users.size === 0)
+		{
+			msg.reply("pls mention someone to fight!");
+		}
+		if(!points[msg.mentions.users.first().id])
+		{
+			points[msg.mentions.users.first().id] = {exp: 0, exptotal: 0, level: 1, hp: 15, att: 3, spd: 4, rep: 0, wins: 0, losses: 0, notice: 1};
+		}
+		if(msg.author.id === msg.mentions.users.first().id)
+		{
+			msg.reply("no i won't let you lose against yourself dummy");
+		}
+		let thisuser = points[msg.author.id];
+		let thatuser = points[msg.mentions.users.first().id];
+		if(thisuser.level <= 10 || thatuser.level <= 10)
+		{
+			tobig = thisuser.level + 5;
+			tolow = thisuser.level - 5;
+		}
+		else if ((thisuser.level <= 20 && thisuser.level > 10) || (thatuser.level > 10 && thatuser.level <= 20))
+		{
+			tobig = thisuser.level + 10;
+			tolow = thisuser.level - 10;
+		}
+		else if ((thisuser.level <= 40 && thisuser.level > 20) || (thatuser.level > 20 && thatuser.level <= 40))
+		{
+			tobig = thisuser.level + 15;
+			tolow = thisuser.level - 15;
+		}
+		else
+		{
+			tobig = thisuser.level + 25;
+			tolow = thisuser.level - 25;
+		}
+		if(thisuser.level === 1 || thatuser.level === 1)
+		{
+			msg.reply("you can't fight if you or the person you want to fight is level 1");
+			return;
+		}
+		if(tobig < thatuser.level || tolow > thatuser.level)
+		{
+			msg.reply("level difference to high");
+			return;
+		}
+		thisuserreset = thisuser.hp;
+		thatuserreset = thatuser.hp;
+		if (thisuser.spd > thatuser.spd)
+		{
+			while((thisuser.hp > 0) || (thatuser.hp > 0))
+			{
+				switch (Math.floor((Math.random() * 3) + 1))
+				{
+					case 1: 
+						thatuser.hp = thatuser.hp - (thisuser.att - 1);
+						break;
+					case 2: 
+						thatuser.hp = thatuser.hp - thisuser.att;
+						break;
+					default: 
+						thatuser.hp = thatuser.hp - (thisuser.att + 1);
+				}
+				if (thatuser.hp < 0)
+				{
+					break;
+				}
+				switch (Math.floor((Math.random() * 3) + 1))
+				{
+					case 1: 
+						thisuser.hp = thisuser.hp - (thatuser.att - 1);
+						break;
+					case 2: 
+						thisuser.hp = thisuser.hp - thatuser.att;
+						break;
+					default: 
+						thisuser.hp = thisuser.hp - (thatuser.att + 1);
+				}
+				if (thisuser.hp < 0)
+				{
+					break;
+				}
+			}
+		}
+		else if (thisuser.spd < thatuser.spd)
+		{
+			while((thisuser.hp > 0) || (thatuser.hp > 0))
+			{
+				switch (Math.floor((Math.random() * 3) + 1))
+				{
+					case 1: 
+						thisuser.hp = thisuser.hp - (thatuser.att - 1);
+						break;
+					case 2: 
+						thisuser.hp = thisuser.hp - thatuser.att;
+						break;
+					default: 
+						thisuser.hp = thisuser.hp - (thatuser.att + 1);
+				}
+				if (thisuser.hp < 0)
+				{
+					break;
+				}
+				switch (Math.floor((Math.random() * 3) + 1))
+				{
+					case 1: 
+						thatuser.hp = thatuser.hp - (thisuser.att - 1);
+						break;
+					case 2: 
+						thatuser.hp = thatuser.hp - thisuser.att;
+						break;
+					default: 
+						thatuser.hp = thatuser.hp - (thisuser.att + 1);
+				}
+				if (thatuser.hp < 0)
+				{
+					break;
+				}
+			}
+		}
+		else
+		{
+			msg.reply("can't fight if same speed (gotta fix so that you can fight)");
+		}
+		if (thisuser.hp <= 0)
+		{
+			msg.channel.sendMessage(msg.author + " vs " + msg.mentions.users.first() + 
+			"\n" + msg.mentions.users.first() + " has won the battle with " + thatuser.hp + " hp remaining");
+			thisuser.hp = thisuserreset;
+			thatuser.hp = thatuserreset;
+			gainedexp = thatuser.exp;
+			gainedrep = thatuser.rep;
+			lostrep = thisuser.rep;
+			if(thatuser.level > thisuser.level)
+			{
+				thatuser.exp = thatuser.exp + (10 + (thatuser.level * 2) - (thatuser.level - thisuser.level));
+				thatuser.rep = thatuser.rep + (10 - (thatuser.level - thisuser.level));
+				thisuser.rep = thisuser.rep - (10 + (thisuser.level - thatuser.level));
+				thatuser.exptotal = thatuser.exptotal + (10 + (thatuser.level * 2) - (thatuser.level - thisuser.level));
+			}
+			else if (thatuser.level < thisuser.level)
+			{
+				thatuser.exp = thatuser.exp + (10 + (thatuser.level * 2) - (thatuser.level - thisuser.level));
+				thatuser.rep = thatuser.rep + (10 - (thatuser.level - thisuser.level));
+				thisuser.rep = thisuser.rep - (10 - (thisuser.level - thatuser.level));
+				thatuser.exptotal = thatuser.exptotal + (10 + (thatuser.level * 2) - (thatuser.level - thisuser.level));
+			}
+			else
+			{
+				thatuser.exp = thatuser.exp + 10 + (thatuser.level *2);
+				thatuser.rep = thatuser.rep + 10;
+				thisuser.rep = thisuser.rep - 10;
+				thatuser.exptotal = thatuser.exptotal + 10 + (thatuser.level *2);
+			}
+			thatuser.wins = thatuser.wins + 1;
+			thisuser.losses = thisuser.losses + 1;
+			gainedexp = thatuser.exp - gainedexp;
+			gainedrep = thatuser.rep - gainedrep;
+			lostrep = thisuser.rep - lostrep;
+			msg.channel.sendMessage(msg.mentions.users.first() + " has gained: " + gainedexp + " exp and: " + gainedrep + " rep." + 
+			"\nsadly, " + msg.author + " lost: " + lostrep + " rep.");
+		}
+		else if (thatuser.hp <= 0)
+		{
+			msg.channel.sendMessage(msg.author + " vs " + msg.mentions.users.first() + 
+			"\n" + msg.author + " has won the battle with " + thisuser.hp + " hp remaining");
+			thisuser.hp = thisuserreset;
+			thatuser.hp = thatuserreset;
+			gainedexp = thisuser.exp;
+			gainedrep = thisuser.rep;
+			lostrep = thatuser.rep;
+			if(thisuser.level > thatuser.level)
+			{
+				thisuser.exp = thisuser.exp + (10 + (thisuser.level * 2) - (thisuser.level - thatuser.level));
+				thisuser.rep = thisuser.rep + (10 - (thisuser.level - thatuser.level));
+				thatuser.rep = thatuser.rep - (10 + (thatuser.level - thisuser.level));
+				thisuser.exptotal = thisuser.exptotal + (10 + (thisuser.level * 2) - (thisuser.level - thatuser.level));
+			}
+			else if (thisuser.level < thatuser.level)
+			{
+				thisuser.exp = thisuser.exp + (10 + (thisuser.level * 2) - (thisuser.level - thatuser.level));
+				thisuser.rep = thisuser.rep + (10 - (thisuser.level - thatuser.level));
+				thatuser.rep = thatuser.rep - (10 - (thatuser.level - thisuser.level));
+				thisuser.exptotal = thisuser.exptotal + (10 + (thisuser.level * 2) - (thisuser.level - thatuser.level));
+			}
+			else
+			{
+				thisuser.exp = thisuser.exp + 10 + (thisuser.level *2);
+				thisuser.rep = thisuser.rep + 10;
+				thatuser.rep = thatuser.rep - 10;
+				thisuser.exptotal = thisuser.exptotal + 10 + (thisuser.level *2);
+			}
+			thisuser.wins = thisuser.wins + 1;
+			thatuser.losses = thatuser.losses + 1;
+			gainedexp = thisuser.exp - gainedexp;
+			gainedrep = thisuser.rep - gainedrep;
+			lostrep = thatuser.rep - lostrep;
+			msg.channel.sendMessage(msg.author + " has gained: " + gainedexp + " exp and: " + gainedrep + " rep." + 
+			"\nsadly, " + msg.mentions.users.first() + " lost: " + lostrep + " rep.");
+		}
+	}
+});
 
+let queue = {};
 const commands = {
 	'play': (msg) => {
 		if (queue[msg.guild.id] === undefined) return msg.channel.sendMessage(`Add some songs to the queue first with ${tokens.prefix}add`);
@@ -144,12 +472,34 @@ bot.on("message", msg => {
 		message.edit(`pong! ${message.createdTimestamp - msg.createdTimestamp}ms`);
 		});
    	}
-	else if(msg.content.startsWith(prefix + "talk"))
+	else if(msg.content.toLowerCase().startsWith(prefix + "translate"))
 	{
-		test.setNick(msg.author)
-		test.create(function (err, session) 
+		translate(msg.content.split(" ").slice(3).join(" "), {from: msg.content.split(" ").slice(1,2).join(" "), to: msg.content.split(" ").slice(2,3).join(" ") }).then(res => {
+			msg.reply(res.text);
+		}).catch(err => {
+			console.error(err);
+		});
+	}
+	else if(msg.content.toLowerCase().startsWith(prefix + "hug"))
+	{
+		fs.readFile('E:/!a javascript/hugcount.json', 'utf8', function readFileCallback(err, data){
+		if (err){
+			console.log(err);
+		} else {
+			obj = JSON.parse(data);
+			obj.hug = obj.hug +1;
+			obj.hug.push;
+			json = JSON.stringify(obj);
+			fs.writeFile('E:/!a javascript/hugcount.json', json, 'utf8'); 
+			msg.reply("*hugs you*, i have hugged " + obj.hug + " people so far! <3");
+		}});
+	}
+	else if(msg.content.toLowerCase().startsWith(prefix + "talk"))
+	{
+		cleverlogin.setNick(msg.author)
+		cleverlogin.create(function (err, session) 
 		{
-			test.ask(msg.content.split(" ").slice(1).join(" "), function (err, response) {
+			cleverlogin.ask(msg.content.split(" ").slice(1).join(" "), function (err, response) {
 			msg.reply(response);
 			});
 		});
@@ -174,7 +524,11 @@ bot.on("message", msg => {
 		msg.channel.sendMessage("```" +
 		"type ++help for music bot commands"+
 		"\n!stats"+
+		"\n!level @username"+
+		"\n!fight @username" +
+		"\n!translate from language to language msg (example: !translate en nl how are you?" +
 		"\n!talk msg (talk to cleverbot)" +
+		"\n!hug " +
 		"\nrate waifu"+
 		"\nroll d4, roll d6, roll d8, roll d10, roll d20"+
 		"\n!rock, !paper, !scissor"+
@@ -418,22 +772,6 @@ bot.on("message", msg => {
 	{
 		console.log(`DM from ${msg.author.username}: ${msg}`.green);
 		fs.appendFile('E:/!a javascript/dmlogs.txt', `DM from ${msg.author.username}: ${msg} \r\n`, (err) => {
-		if (err) throw err;
-			console.log('written to file');
-		});
-	}
-});
-
-bot.on('message', msg => {
-	if(msg.content.toLowerCase().includes("shit bot") || 
-	msg.content.toLowerCase().includes("fgt") || 
-	msg.content.toLowerCase().includes("faggot") || 
-	msg.content.toLowerCase().includes("fag"))
-	{
-		msg.delete()
-		.then(msg => console.log(`Deleted msg from ${msg.author} ${msg.member.user.username}: ${msg}`.red));
-		msg.reply("no, bad!");
-		fs.appendFile('E:/!a javascript/deletelogs.txt', `Deleted msg from ${msg.author} ${msg.member.user.username}: ${msg} \r\n`, (err) => {
 		if (err) throw err;
 			console.log('written to file');
 		});
