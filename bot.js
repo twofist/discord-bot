@@ -1020,5 +1020,4 @@ bot.on('message', msg => {
 	if (commands.hasOwnProperty(msg.content.toLowerCase().slice(tokens.prefix.length).split(' ')[0])) commands[msg.content.toLowerCase().slice(tokens.prefix.length).split(' ')[0]](msg);
 });
 
-//how the bot logs in
 bot.login(tokens.d_token);
