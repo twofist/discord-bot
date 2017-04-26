@@ -1,5 +1,5 @@
 # discord-bot
-my discord bot work in progress
+my discord bot
 
 
 invite link for the bot
