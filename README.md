@@ -9,14 +9,14 @@ https://discordapp.com/oauth2/authorize?client_id=255377859042869248&scope=bot
 
 what can it do?
 
--level/fighting system
- 	every user has a set stats to begin with
- 	people get experience points per message send
- 	they can level up and get higher stats
- 	they can fight other people
-	for winning/losing you get/lose rep (exp only if win)
-	you can spend a set amount of rep for stats upgrades
-	you can let it show the stats of yourself or other players
+-level/fighting system  
+ 	every user has a set stats to begin with  
+ 	people get experience points per message send  
+ 	they can level up and get higher stats  
+ 	they can fight other people  
+	for winning/losing you get/lose rep (exp only if win)  
+	you can spend a set amount of rep for stats upgrades  
+	you can let it show the stats of yourself or other players  
 -translate from language to language
 -talk to cleverbot
 -give my bot a hug
