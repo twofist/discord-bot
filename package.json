@@ -30,7 +30,6 @@
     "url": "git+https://github.com/twofist/discord-bot.git"
   },
   "keywords": [
-    "heroku",
     "discord.js"
   ],
   "author": "twofist",
