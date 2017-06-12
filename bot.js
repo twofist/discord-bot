@@ -14,7 +14,7 @@ bot.on("ready", () => {
 	console.log(`Ready to serve in ${bot.channels.size} channels on ${bot.guilds.size} servers, for a total of ${bot.users.size} users.`.yellow	);
 });
 
-let points = JSON.parse(fs.readFileSync('E:/!a javascript/levelcount.json', 'utf8'));
+let points = JSON.parse(fs.readFileSync('levelcount.json', 'utf8'));
 bot.on("message", msg => {
 	if(msg.author.bot) return;
 	if(!points[msg.author.id])
@@ -129,7 +129,7 @@ bot.on("message", msg => {
 		thisuser.spd = thisuser.spd + speed
 	}
 	json = JSON.stringify(points, null, "\t");
-	fs.writeFileSync('E:/!a javascript/levelcount.json', json, 'utf8');
+	fs.writeFileSync('levelcount.json', json, 'utf8');
 	let prefix = "!";
 	if(!msg.content.startsWith(prefix)) return;
     if (msg.content.toLowerCase().startsWith(prefix + "level"))
@@ -478,11 +478,11 @@ bot.on("message", msg => {
 	}
 	else if(msg.content.toLowerCase().startsWith(prefix + "hug"))
 	{
-		let obj = JSON.parse(fs.readFileSync('E:/!a javascript/hugcount.json', 'utf8'));
+		let obj = JSON.parse(fs.readFileSync('hugcount.json', 'utf8'));
 			obj.hug = obj.hug +1;
 			obj.hug.push;
 			json = JSON.stringify(obj);
-			fs.writeFileSync('E:/!a javascript/hugcount.json', json, 'utf8');
+			fs.writeFileSync('hugcount.json', json, 'utf8');
 			msg.reply("*hugs you*, i have hugged " + obj.hug + " people so far! <3");
 	}
 	else if(msg.content.toLowerCase().startsWith(prefix + "talk"))
@@ -787,11 +787,11 @@ bot.on("message", msg => {
 		console.log("dm received".yellow)
 		if (msg.attachments.first() != undefined)
 		{
-			fs.appendFileSync('E:/!a javascript/dmlogs.txt', `DM from ${msg.author.username}: ${msg} ${msg.attachments.first().url} \r\n`);
+			fs.appendFileSync('dmlogs.txt', `DM from ${msg.author.username}: ${msg} ${msg.attachments.first().url} \r\n`);
 		}
 		else
 		{
-			fs.appendFileSync('E:/!a javascript/dmlogs.txt', `DM from ${msg.author.username}: ${msg} \r\n`);
+			fs.appendFileSync('dmlogs.txt', `DM from ${msg.author.username}: ${msg} \r\n`);
 		}
 	}
 });
@@ -934,7 +934,7 @@ bot.on('error', e => { console.error(e); });
 
 let logError = (e) => {
   let msg = e.toString();
-  let path = "E:/!a javascript/errorlogs/" + Date.now() + ".txt";
+  let path = "errorlogs" + Date.now() + ".txt";
   fs.writeFileSync(path, msg);
 };
  
