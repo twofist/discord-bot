@@ -3,13 +3,13 @@ my discord bot
 
 
 ## invite link for the bot  
-## https://discordapp.com/oauth2/authorize?client_id=255377859042869248&scope=bot  
+### https://discordapp.com/oauth2/authorize?client_id=255377859042869248&scope=bot  
 
 
 
 ### what can it do?  
 
--1. level/fighting system  
+1. level/fighting system  
        - every user has a set stats to begin with  
        - people get experience points per message send  
        - they can level up and get higher stats  
